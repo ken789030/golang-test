@@ -1,0 +1,95 @@
+{{ define "user/checkIn.html" }}
+
+{{ template "home/head.html" .head}}
+
+<div class="main">
+
+    {{ template "user/menu.html" .subMenuId}}
+
+    <div class="mt20">
+
+        <div id="myTabContent" class="tab-content tab-form" style="border-top:1px solid #ddd ;">
+            <div role="tabpanel" class="tab-pane fade active in" id="tab1" aria-labelledby="tab1-tab">
+                <form class="form-horizontal" id="inputForm"
+                      action="" method="post"
+                      novalidate="novalidate">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">用户Id</label>
+                        <div class="col-sm-6">
+                            <div class="input-group">
+                                <input type="text" class="form-control required" placeholder="请输入用户ID" name="user_id" id="user_id" cols="150" ></input>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">存入金额</label>
+                        <div class="col-sm-4">
+                            <div class="input-group">
+                                <input type="number" class="form-control required" placeholder="" maxlength="10"
+                                       name="dep_money" id="dep_money" validate="{required:true,decimal:[7,2]}">
+                                <span class="input-group-addon" id="basic-addon2">元</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-4">
+                            <button type="button" class="btn btn-primary" id="save">确定</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div role="tabpanel" class="tab-pane fade" id="tab2" aria-labelledby="tab2-tab">
+            </div>
+        </div>
+
+
+    </div>
+    
+
+</div>
+
+<script>
+
+
+    $("#save").on("click", function () {
+        $("#inputForm").validate();
+        if ($('#inputForm').valid()) {
+            $.ajax({
+                type: 'POST',
+                url: "/Cash/Deposited.backendCheckIn",
+                data: $('#inputForm').serialize(),
+                dataType: "json", cache: false,
+                success: function (res) {
+                    if (res.code == 0) {
+                        $.altDialog({
+                            title: '温馨提示',
+                            content: "您的操作已成功",
+                            done: function () {
+                                location.href = '/Cash/Deposited';
+                            }
+                        });
+                    } else {
+                        $.altDialog({
+                            title:'温馨提示',
+                            content:res.msg,
+                            done: function () {
+                                location.href = '/Cash/Deposited';
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    });
+</script>
+
+</div>
+</div>
+{{ template "home/foot.html" }}
+
+{{ end }}

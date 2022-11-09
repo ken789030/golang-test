@@ -1,0 +1,331 @@
+{{ define "purview/actLog.html" }}
+
+
+{{ template "home/head.html" .head}}
+
+<div class="main">
+    {{ template "purview/menu.html" .subMenuId}}
+
+    <form id="myform" name="myform" class="form-inline mt15" role="form"
+          action="" method="get">
+        <div class="btn-group">
+            <input type="text" class="form-control input-sm" placeholder="管理员账号" name="admin" value="">
+        </div>
+
+        <div class="btn-group">
+            <select class="form-control" id="classify" name="classify">
+                <option value="0">分类</option>
+            </select>
+        </div>
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"
+                    aria-expanded="false">动作&nbsp;<span class="caret"></span></button>
+            <ul id="paramAction" class="dropdown-menu" role="menu">
+            </ul>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"
+                    aria-expanded="false">状态&nbsp;<span class="caret"></span></button>
+            <ul id="paramStatus" class="dropdown-menu" role="menu">
+            </ul>
+        </div>
+        <div class="form-group ml5">
+
+            <button type="button" data-toggle="modal" data-target="#myModal5" class="btn btn-primary btn-sm">进阶条件
+            </button>
+            <button type="button" onclick="searchSubmit()" class="btn btn-primary btn-sm"><span
+                        class="glyphicon glyphicon-search" aria-hidden="true"></span> 搜索
+            </button>
+        </div>
+        <table class="table table-bordered table-hover mt15">
+            <thead>
+            <tr>
+                <th>管理员账号</th>
+                <th>分类</th>
+                <th>模块</th>
+                <th>动作</th>
+                <th>状态</th>
+                <th>IP</th>
+                <th>操作时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+                <tr>
+                    <td colspan="6" class="text-center">暂无数据</td>
+                </tr>
+            </tbody>
+        </table>
+        <nav id="" class="pull-left pagination">
+            <div style="margin-top:5px;"><span>共 <big style="font-weight:bold;"></big> 条记录，当前第 <big
+                            style="font-weight:bold;"></big> 页，共 <big style="font-weight:bold;"></big> 页 </span>
+            </div>
+        </nav>
+        <nav class="pull-right">
+        </nav>
+        <div id="myModal5" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="false">
+            <div class="modal-backdrop fade in"></div>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" name="cancel">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel">
+                            增加查询条件<a class="anchorjs-link"
+                                     href="#myModalLabel"><span
+                                        class="anchorjs-icon"></span></a>
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="oldStartDate" id="oldStartDate" data-format="yyyy-MM-dd"
+                               placeholder="" value="">
+                        <input type="hidden" name="oldEndDate" id="oldEndDate" data-format="yyyy-MM-dd" placeholder=""
+                               value="">
+                        <table class="table table-bordered">
+                            <tbody>
+                            <tr>
+                                <td>日期</td>
+                                <td>
+                                    <input name="startDate" type="text" id="datetimepicker1"
+                                           class="form-control form_datetime input-sm" data-format="yyyy-MM-dd"
+                                           placeholder="" value="" onBlur="checkDate()">
+                                    - <input name="endDate" type="text" id="datetimepicker2"
+                                             class="form-control form_datetime input-sm" data-format="yyyy-MM-dd"
+                                             placeholder="" value="" onBlur="checkDate()">
+                                </td>
+                                <td>
+                                    <div class="quickTime" id="quickTime" start="datetimepicker1" end="datetimepicker2"
+                                         pattern="yyyy-MM-dd"></div>
+                                </td>
+                            </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <span class="error" style="display:none"></span>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="searchAdvBtn">确认</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" name="cancel">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div id="logDetailModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">查看详情<a class="anchorjs-link"
+                                                                     href="#myModalLabel"><span
+                                    class="anchorjs-icon"></span></a></h4>
+                </div>
+                <div class="modal-body" style="word-wrap:break-word;">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">操作时间</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static" id="logCreateDate"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">操作人</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static" id="logAdmin">alleli</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">IP地址</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static" id="logIp">客户端IP：1.1.1.1 代理IP：2.2.2.2，3,3,3,3</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">操作情况</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static" id="logCSINFO">增加组别成功</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">相关数据</label>
+                            <div class="col-sm-10" id="logBody">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">(function () {
+
+            var changeUrl = function() {
+                var classify = $("#classify").val();
+                var url = window.location.pathname;
+                url += "?classify=" + classify;
+                console.log(url);
+                location.href = url;
+            }
+
+
+            $("#classify").change(function(){
+                changeUrl();
+            });
+
+            //时间控件
+            $('#datetimepicker1').datetimepicker({
+                language: 'zh-CN',
+                autoclose: 1,
+                todayBtn: 1,
+                minuteStep: 5,
+                format: 'yyyy-mm-dd',
+                minView: 'month',
+                autoclose: true
+            }).on('show', function (ev) {
+                $('#datetimepicker1').datetimepicker('setEndDate', new Date());
+            }).change(function () {
+                checkDate();
+            });
+            $('#datetimepicker2').datetimepicker({
+                language: 'zh-CN',
+                autoclose: 1,
+                todayBtn: 1,
+                minuteStep: 5,
+                format: 'yyyy-mm-dd',
+                minView: 'month',
+                autoclose: true
+            }).on('show', function (ev) {
+                $('#datetimepicker2').datetimepicker('setEndDate', new Date());
+            }).change(function () {
+                checkDate();
+            });
+
+            //下拉選擇期間
+            $(".quickTime").click(function () {
+                checkDate();
+            });
+
+            //下拉框
+            $('#paramAction').dropdown({
+                name: "actionType",
+                valueName: "value",
+                current_value: ""
+            });
+            $('#paramStatus').dropdown({
+                name: "status",
+                valueName: "value",
+                current_value: ""
+            });
+
+
+            //查詢條件設置判斷↓↓↓↓↓
+            //取消後，日期重置
+            $("button[name='cancel']").click(function () {
+                butCnl();
+            });
+
+            //查詢條件確定後， 紀錄設定的日期
+            $("#searchAdvBtn").click(function () {
+                $('#oldStartDate').val($("#datetimepicker1").val());
+                $('#oldEndDate').val($("#datetimepicker2").val());
+            });
+
+        })();
+
+        //针对查询条件的日期做检查，指填写其中一个日期，则会有个提示讯息以及确认键无法送出。
+        function checkDate() {
+            //checkDateValid共用js ，檢查開始日期與結束日期是否有效填入，有誤回傳為錯誤訊息，無誤回空字串
+            //param : 開始日期
+            //param : 結束日期
+            //param : 日期是否可全查 >> true 可未填入日期全查、 false 不可未填入日期
+
+            var errorStr = checkDateValid($('#datetimepicker1').val(), $('#datetimepicker2').val(), false);
+            //彈跳視窗顯示↓
+            if (errorStr == "") {
+                $("span.error").css("display", "none");
+                $('#searchAdvBtn').removeAttr("disabled");
+            } else {
+                $('#searchAdvBtn').attr("disabled", true);
+                $("span.error").css("display", "inline");
+            }
+            $("span.error").html(errorStr);
+
+        }
+        //查詢條件取消或是"X"，將重置之前的日期
+        function butCnl() {
+            $("span.error").html("");
+            $("span.error").css("display", "none");
+            $('#searchAdvBtn').removeAttr("disabled");
+            $('#datetimepicker1').val($("#oldStartDate").val());
+            $('#datetimepicker2').val($("#oldEndDate").val());
+        }
+
+        function showFailureDetail(obj) {
+            var $obj = $(obj);
+            var str = $obj.attr("failure-detail") || "未填写原因";
+            $.altDialog({title:'失败原因',content:str});
+        }
+
+        function showRelevance(id) {
+            $.ajax({url:"/employee/log/detail/"+id,dateType:"html",type:"get",async:false})
+                    .done(function (res) {
+                        $.altDialog({title:'关联数据',content:res});
+                    });
+        }
+
+        function showModal(obj) {
+            var sb = new StringBuilder();
+            var $obj = $(obj);
+            var str = $obj.attr("log-content");
+            strs = JSON.parse(str);
+            console.log(str);
+            var ysd = $obj.parent().parent().children('td');
+            if (str) {
+                //var strs = str.split("^");
+                for (var i in strs) {
+                    if (i == "admin_google_auth") {
+                        strs[i] = "xxx";
+                    }
+                    var poject = i + ":" + strs[i];
+
+                    sb.append('<p class="form-control-static">').append(poject).append('</p>');
+                }
+            }
+            $("#logAdmin").html(ysd.eq("0").html());
+            $("#logCSINFO").html(ysd.eq("2").html() + " " + ysd.eq("3").html());
+            $("#logCreateDate").html(ysd.eq("6").html());
+            $("#logIp").html($obj.attr("log-ip"));
+            if (ysd.eq("0").html() == 'maintenance') {
+                if (isAdmin == 1) {
+                    $("#logBody").html(sb.toString());
+                } else {
+                    $("#logBody").html("xxx");
+                }
+            } else {
+                $("#logBody").html(sb.toString());
+            }
+
+            $("#logDetailModal").modal("show");
+        }
+        function searchSubmit() {
+            //$("[name='pageNo']").val("1");
+
+            document.myform.action = "/Employee.actLog";
+            $("#myform").submit();
+        }
+
+    </script>
+</div>
+</div>
+
+{{ template "home/foot.html" }}
+
+{{ end }}

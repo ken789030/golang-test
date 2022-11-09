@@ -1,0 +1,25 @@
+{{ define "dataSearch/menu.html" }}
+
+<div class="twoNav">
+    <ul>
+        <li {{ if eq . "betLog"  }} class="active"  {{ end }}>
+            <a href="/dataSearch/betLog">用戶遊戲紀錄</a>
+        </li>
+        <li {{ if eq . "onlineUsers"  }} class="active"  {{ end }}>
+            <a href="/dataSearch/onlineUsers">在線用戶列表</a>
+        </li>
+        <li {{ if eq . "onlineUserNumber"  }} class="active"  {{ end }}>
+            <a href="/dataSearch/onlineUserNumber">同時在線人數</a>
+        </li>
+        <li {{ if eq . "jackpot"  }} class="active"  {{ end }}>
+            <a href="/dataSearch/jackpot">JP彩金查詢</a>
+        </li>
+        <li {{ if eq . "betLogRank"  }} class="active"  {{ end }}>
+            <a href="/dataSearch/betLogRank">投注排行統計</a>
+        </li>
+    </ul>
+    <div class="clearfix"></div>
+</div>
+
+
+{{ end }}

@@ -1,0 +1,19 @@
+{{ define "game/menu.html" }}
+
+<div class="twoNav">
+    <ul>
+        <li {{ if eq . "jackpotBonus"  }} class="active"  {{ end }}>
+            <a href="/game/jackpotBonus">JP獎金設定</a>
+        </li>
+        <li {{ if eq . "probability"  }} class="active"  {{ end }}>
+            <a href="/game/probability">機台機率設定(暫不設定)</a>
+        </li>
+        <li {{ if eq . "maintain"  }} class="active"  {{ end }}>
+            <a href="/game/maintain">遊戲維護管理</a>
+        </li>
+    </ul>
+    <div class="clearfix"></div>
+</div>
+
+
+{{ end }}

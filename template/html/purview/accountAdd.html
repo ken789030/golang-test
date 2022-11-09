@@ -1,0 +1,180 @@
+{{ define "purview/accountAdd.html" }}
+
+{{ template "home/head.html" .head}}
+
+<div class="main">
+    {{ template "purview/menu.html" .subMenuId}}
+    <h3 class="sub-header">
+        成员管理-新增成员
+        <a href="/purview/account" class="btn btn-primary btn-sm pull-right mt-5">
+                    <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
+            返回成员列表</a>
+    </h3>
+    <form id="inputForm" action="" method="post"
+          class="form-horizontal mt20" role="form" novalidate="novalidate">
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><b class="text-danger">*</b>登录账号</label>
+            <div class="col-sm-2">
+                <input type="text" name="admin_name" value="" class="form-control required" placeholder="" maxlength="12" >
+            </div>
+            <p class="help-block">6-12位字母或数字或其组合，区分大小写</p>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">
+                <b class="text-danger">*</b>登录密码</label>
+            <div class="col-sm-2">
+                <input type="password" name="admin_password" 
+                    id="loginPwd" class="form-control required" placeholder="" maxlength="12">
+            </div>
+            <p class="help-block">6-12位字母及数字，必须英文字母开头，区分大小写</p>
+            
+
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">
+                <b class="text-danger">*</b>确认密码</label>
+            <div class="col-sm-2">
+                <input type="password" name="admin_password2" 
+                    class="form-control required" placeholder=""
+                       maxlength="12">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><b class="text-danger">*</b>所属组别</label>
+            <div class="col-sm-2">
+                <select class="form-control required" id="groupId" name="group_id">
+                   
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">成员昵称</label>
+            <div class="col-sm-2">
+                <input type="text" name="admin_nickname"  value="" class="form-control" maxlength="16">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">是否启用</label>
+            <div class="col-sm-2">
+                <label class="radio-inline">
+                    <input type="radio"  name="admin_status" value="1">启用
+                </label>
+                <label class="radio-inline">
+                    <input type="radio"  name="admin_status" value="0">禁用
+                </label>
+            </div>
+        </div>
+        <!--<div class="form-group">
+            <label class="col-sm-2 control-label">动态口令</label>
+            <div class="col-sm-10">
+            </div>
+        </div>-->
+        <input type="hidden" name="userType" value="1">
+        <input type="hidden" name="id" value="">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">成员描述</label>
+            <div class="col-sm-4">
+                <textarea name="admin_desc" cols="" rows="5" class="form-control"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-4">
+                <div type="button" id="save" class="btn btn-primary">确定</div>
+                <button type="reset" class="btn btn-default" onclick="javascript:history.back(1)">取消</button>
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+<script>
+    $(function () {
+        $("[data-toggle='tooltip']").tooltip();
+    });
+</script>
+
+<script>
+
+    var id = '';
+    var rules = {
+        admin_name: {
+            isLoginName: true
+        },
+        admin_desc: {
+            isDescription: true
+        }
+    }
+    if (id == 0) {
+        rules["admin_password"] = {isLoginPwd: true};
+        rules["admin_password2"] = {equalTo: "#loginPwd"};
+    }
+
+    $(document).ready(
+            function () {
+                jQuery.validator.addMethod("isLoginName", function (value, element) {
+                    var length = value.length;
+                    var checkValue = /^[a-z0-9A-Z_]{6,12}$/;
+                    var checkValue2 = /^[^<>]+$/;
+                    return (length > 0) && (checkValue.test(value)) && (checkValue2.test(value));
+                }, "登录账号由6-12位字母或数字或其组合，区分大小写，并且不能包含尖括号‘<’‘>’！");
+
+                if (id == 0) {
+                    jQuery.validator.addMethod("isLoginPwd", function (value, element) {
+                        var length = value.length;
+                        var checkValue = /^[a-zA-Z_][a-z0-9A-Z_]{5,12}$/;
+                        var checkValue2 = /^[^<>]+$/;
+                        return $.trim(value) != "" && checkValue.test(value) && (checkValue2.test(value));
+                    }, "密码由6-12位字母及数字，区分大小写，并且不能包含尖括号‘<’‘>’！");
+                }
+
+                jQuery.validator.addMethod("isDescription", function (value, element) {
+                    var length = value.length;
+                    var checkValue = /^[^<>]+$/;
+                    return (length == 0) || (checkValue.test(value));
+                }, "组别描述不能包含尖括号‘<’‘>’！");
+
+                $("#inputForm").validate({
+                    rules: rules
+                    , errorPlacement: function (error, element) {if (element.is(":checkbox"))
+                    error.appendTo(element.parent().next());else
+                    error.insertAfter(element);}
+                });
+
+                $("#save").on("click", function () {
+                    $("#inputForm").validate();
+                    if ($('#inputForm').valid()) {
+                        $.ajax({
+                            type: 'POST',
+                            url: "/Employee/Member.add",
+                            data: $('#inputForm').serialize(),
+                            dataType: "json", cache: false,
+                            success: function (res) {
+                                if (res.code == 0) {
+
+                                    if (res.secret) {
+                                        var content = "您的操作已成功, 验证器密码: " + res.secret;
+                                    } else {
+                                        var content = "您的操作已成功";
+                                    }
+
+                                    $.altDialog({
+                                        title: '温馨提示',
+                                        content: content,
+                                        done: function () {
+                                            location.href = '/Employee/Member';
+                                        }
+                                    });
+                                } else {
+                                    $.altDialog({title:'温馨提示',content:res.msg});
+                                }
+                            }
+                        });
+                    }
+                })
+                ;
+            }
+    )
+    ;
+</script>
+{{ template "home/foot.html" }}
+
+{{ end }}

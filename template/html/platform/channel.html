@@ -1,0 +1,180 @@
+{{ define "platform/channel.html" }}
+
+{{ template "home/head.html" .head}}
+
+
+<script>
+    $(document).ready(function () {
+        $("[data-toggle='popover']").popover();
+        $("[data-toggle='tooltip']").tooltip();
+    });
+</script>
+
+<div class="main">
+    {{ template "platform/menu.html" .subMenuId}}
+    <form action="" class="form-inline mt15"
+          role="form" name="formUser">
+
+        <div class="btn-group">
+            <label>渠道名字</label>
+        </div>
+        <div class="btn-group">
+            <input id="changeLoginValue" name="chanName" type="text" value=""
+                   class="form-control input-sm required" placeholder=""
+                   onkeyup="value=value.replace( /\s+/g,&#39;&#39;)">
+        </div>
+
+        <div class="form-group ml5">
+            <button type="button" class="btn btn-primary btn-sm" onclick="submitResult(0);">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span> 搜索
+            </button>
+        </div>
+
+        <div class="form-group ml5">
+            <button type="button" class="btn btn-primary btn-sm" onclick="submitResult(1);">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增渠道
+            </button>
+        </div>
+    </form>
+    <form id="myform" name="myform" action=""
+          method="get" class="form-inline mt15" role="form">
+        <table class="table table-bordered mt15">
+            <thead>
+            <tr>
+                <th>渠道ID</th>
+                <th>渠道编号</th>
+                <th>渠道名字</th>
+                <th>渠道状态</th>
+                <th>AESKey</th> 
+                <th>创建时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+
+        <div class="mt15 pull-left">
+            <!--
+            <button type="button" onclick="batchRemove();" class="btn btn-default btn-sm">
+                批量删除
+            </button>-->
+        </div>
+        <nav id="" class="pull-left pagination">
+            <div style="margin-top:5px;"><span>共 
+                <big style="font-weight:bold;"></big> 条记录，当前第 
+                <big style="font-weight:bold;"></big> 页，共 
+                <big style="font-weight:bold;"></big> 页 </span>
+            </div>
+        </nav>
+        <nav class="pull-right">
+
+        </nav>
+
+    </form>
+    <form id="logForm" role="form" method="post" action="">
+        <input type="hidden" name="admin" id="admin">
+        <input type="hidden" name="searchType" id="searchType" value="site">
+        <input type="hidden" name="searchContent" id="searchContent" value="">
+    </form>
+    <script type="text/javascript">
+        (function () {
+            //时间控件
+            $('#datetimepicker1').datetimepicker({
+                language: 'zh-CN',
+                todayBtn: true,
+                minuteStep: 1,
+                format: 'yyyy-mm-dd',
+                minView: 'month',
+                autoclose: true
+            }).on('show', function (ev) {
+                $('#datetimepicker1').datetimepicker('setEndDate', new Date());
+            }).change(function () {
+                checkDate();
+            });
+
+            $('#datetimepicker2').datetimepicker({
+                language: 'zh-CN',
+                todayBtn: true,
+                minuteStep: 1,
+                format: 'yyyy-mm-dd',
+                minView: 'month',
+                autoclose: true
+            }).on('show', function (ev) {
+                $('#datetimepicker2').datetimepicker('setEndDate', new Date());
+            }).change(function () {
+                checkDate();
+            });
+
+            //下拉選擇期間
+            $(".quickTime").click(function () {
+                checkDate();
+            });
+
+            //查詢條件設置判斷↓↓↓↓↓
+            //取消後，日期重置
+            $("button[name='cancel']").click(function () {
+                butCnl();
+            });
+
+            $("#searchAdvBtn").click(function (){$('#oldStartDate').val($("#datetimepicker1").val());$('#oldEndDate').val($("#datetimepicker2").val());});
+            $('#changeLogin').dropdown({name:"changeLogin",current_value:"0"
+            });
+
+            $('#groupId').dropdown({name:"groupId",current_value:""});
+
+        })();
+
+        function log(loginName) {
+            $("#admin").val(loginName);
+            $("#logForm").submit();
+        }
+        //针对查询条件的日期做检查，指填写其中一个日期，则会有个提示讯息以及确认键无法送出。
+        function checkDate() {
+            //checkDateValid共用js ，檢查開始日期與結束日期是否有效填入，有誤回傳為錯誤訊息，無誤回空字串
+            //param : 開始日期
+            //param : 結束日期
+            //param : 日期是否可全查 >> true 必填日期、 false 不必填日期
+
+            var errorStr = checkDateValid($('#datetimepicker1').val(), $('#datetimepicker2').val(), false);
+
+            //彈跳視窗顯示↓
+            if (errorStr == "") {
+                $("span.error").css("display", "none");
+                $('#searchAdvBtn').removeAttr("disabled");
+            } else {
+                $('#searchAdvBtn').attr("disabled", true);
+                $("span.error").css("display", "inline");
+            }
+            $("span.error").html(errorStr);
+        }
+
+        //查詢條件取消或是"X"，將重置之前的日期
+        function butCnl() {
+            $("span.error").html("");
+            $("span.error").css("display", "none");
+            $('#searchAdvBtn').removeAttr("disabled");
+            $('#datetimepicker1').val($("#oldStartDate").val());
+            $('#datetimepicker2').val($("#oldEndDate").val());
+        }
+    </script>
+</div>
+</div>
+
+<script type="text/javascript">
+    function submitResult(id) {
+        if (id == 0) {
+            document.formUser.action = "/platform/channel";
+            formUser.submit();
+        }
+        if (id == 1) {
+            location.href = "/platform/channel/add";
+        }
+
+    }
+</script>
+
+{{ template "home/foot.html" }}
+
+{{ end }}

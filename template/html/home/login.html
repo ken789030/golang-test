@@ -1,0 +1,178 @@
+<html class="login-bg">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/assets/images/favicon.ico">
+
+    <title>slot後台</title>
+
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="/assets/css/signin.css?123=123" rel="stylesheet">
+
+    <script src="/assets/js/ie-emulation-modes-warning.js"></script>
+
+
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/js/ie10-viewport-bug-workaround.js"></script>
+    <script src="/assets/js/altDialog.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        if (window.top != self.top)
+            window.top = self.top;
+    </script>
+</head>
+
+<body>
+
+<div class="container">
+    <h1 class="signin-logo"></h1>
+    <form class="form-signin" action="" method="post" role="form">
+        <input type="hidden" name="dmicTokens" id="dmicTokensHid" value="" class="form-control" placeholder="">
+        <h2 class="form-signin-heading">登录站点端</h2>
+        <input type="text" class="form-control" id="username" name="username"
+               placeholder="账户" value="" minlength="6" maxlength="12"
+               required="" autofocus="">
+        <input type="password" class="form-control" id="password" name="password"
+               placeholder="密码" value="" minlength="6"
+               maxlength="12" required="">
+
+        <button class="btn btn-lg btn-warning btn-block" type="button" onclick="submitForm();">登 录</button>
+    </form>
+
+</div> 
+
+<div class="modal fade" id="dmicTokensModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close checkDmic" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">x</span></button>
+                <h4 class="modal-title" id="myModalLabel">输入动态口令</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">请输入动态口令</label>
+                        <div class="col-sm-6">
+                            <input type="text" id="dmicTokensTxt" value="" class="form-control" placeholder="">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" id="submitDmicTokensBtn">确定</button>
+                <button type="button" class="btn btn-default checkDmic" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    (function () {
+        var url = window.location.href;
+        if (url.indexOf("/login") == -1)
+            window.location.href = "/login";
+
+        if (url.indexOf("kickout=3") >= 0)
+            $.altDialog({title: '溫馨提示', content: "有相同账号登录，您已被登出！", hasSetTimeout: false});
+        else if (url.indexOf("kickout=5") >= 0)
+            $.altDialog({title: '溫馨提示', content: "账号已被禁用！", hasSetTimeout: false});
+        else if (url.indexOf("kickout=7") >= 0)
+            $.altDialog({title: '溫馨提示', content: "您的IP不在信任名单内！", hasSetTimeout: false});
+        else if (url.indexOf("kickout=8") >= 0)
+            $.altDialog({title: '溫馨提示', content: "账号已被删除！", hasSetTimeout: false});
+
+        if (url.indexOf("?") >= 0)
+            window.history.pushState({}, document.title, window.location.href.split("?")[0]);
+    })();
+    function submitForm() {
+        console.log($("form").serialize());
+        // return;
+        $.ajax({
+            'url': 'login', 
+            async: false, 
+            dataType: "json", 
+            type: "post", 
+            data: $("form").serialize()
+            })
+            .done(function (res) {
+                console.log(res)
+                console.log(res.code);
+                if (res.code != 0) {
+
+                    $.altDialog({title: '提示', content: res.msg});
+                    $("#dmicTokensModal").modal("hide");
+                    $('#dmicTokensHid').val('')
+                    $('#dmicTokensTxt').val('')
+                    // changeImg();
+                } else {
+                    location.href = '/';
+                }
+            }).fail(function (e) {
+                console.log(e);
+                // changeImg();
+                $.altDialog({title: '提示', content: "数据加载失败！"});
+                $("#dmicTokensModal").modal("hide");
+                $('#dmicTokensHid').val('')
+                $('#dmicTokensTxt').val('')
+            });
+    }
+
+    function keypress(e, inp) {
+        e = window.event ? window.event : e;
+        if (typeof(e) == 'undefined') {
+
+        } else {
+            if (e.keyCode == 13) {
+                if (inp == '') {
+                    submitForm();
+                } else {
+                    $("#" + inp).focus();
+                }
+            }
+        }
+    }
+    var checkDmic = false;
+    $("#submitDmicTokensBtn").click(function () {
+        $("#dmicTokensHid").val($("#dmicTokensTxt").val());
+        var dmicTokens = $("#dmicTokensHid").val();
+        if (dmicTokens == null || dmicTokens == "") {
+            $.altDialog({title: '提示', content: "请输入动态口令！"});
+            return false;
+        }
+        if (!/^[0-9]\d*$/.test(dmicTokens) || dmicTokens.length != 6) {
+            $.altDialog({title: '提示', content: "动态口令为6位的正整数！"});
+            checkDmic = true
+            return false;
+        }
+        submitForm();
+    });
+    $("#dmicTokensTxt").keydown(function (e) {
+        var event = e || window.event;
+        if (event.keyCode == 13) {
+            $("#submitDmicTokensBtn").click();
+            return false;
+        }
+    });
+
+    $('.checkDmic').click(function () {
+        if (checkDmic) {
+            changeImg();
+            $("#dmicTokensModal").modal("hide");
+            $('#dmicTokensHid').val('')
+            $('#dmicTokensTxt').val('')
+        }
+    })
+
+    delete window.sessionStorage['__head_fresh_time'];
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+{{ define "user/menu.html" }}
+
+<div class="twoNav">
+    <ul>
+        <li {{ if eq . "member"  }} class="active"  {{ end }}>
+            <a href="/user/member">会员管理</a>
+        </li>
+        <li {{ if eq . "checkIn"  }} class="active"  {{ end }}>
+            <a href="/user/checkIn">人工後台補幣</a>
+        </li>
+    </ul>
+    <div class="clearfix"></div>
+</div>
+
+{{ end }}

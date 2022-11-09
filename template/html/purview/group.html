@@ -1,0 +1,71 @@
+{{ define "purview/group.html" }}
+
+{{ template "home/head.html" .head}}
+
+<script>
+    $(document).ready(function () {
+        $("[data-toggle='popover']").popover();
+        $("[data-toggle='tooltip']").tooltip();
+    });
+
+    function del(id) {
+        $.altDialog({
+                    title: "温馨提示", content: "您真的确定要删除吗？",
+                    style: "confirm",
+                    done: function () {
+                        $.ajax({
+                                    type: 'POST',
+                                    url: "/Employee/Group.del?id=" + id,
+                                    data: $('#myform').serialize(),
+                                    dataType: "json",
+                                    cache: false,
+                                    success: function (res) {
+                                        if (res.code == 0) {
+                                            $.altDialog({
+                                                title: '温馨提示',
+                                                content: "您的操作已成功",
+                                                done: function () {
+                                                    location.href = '/Employee/Group';
+                                                }
+                                            });
+                                        } else {
+                                            $.altDialog({title:'温馨提示',content:res.msg});
+                                        }
+                                    }
+                                }
+                        );
+                    }
+                }
+        );
+    }
+</script>
+
+<div class="main">
+    {{ template "purview/menu.html" .subMenuId}}
+
+    <form action="/purview/group/add" class="form-inline mt15" role="form">
+        <button type="submit" class="btn btn-primary btn-sm">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增组
+        </button>
+    </form>
+    <form id="myform" name="myform" method="get" class="form-inline mt15" role="form">
+        <table class="table table-bordered mt15">
+            <thead>
+            <tr>
+                <th>组名称</th>
+                <th>状态</th>
+                <th>成员数</th>
+                <th>备注</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+    </form>
+</div>
+</div>
+{{ template "home/foot.html" }}
+
+{{ end }}

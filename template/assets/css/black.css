@@ -1,0 +1,12 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>404 - 页面不存在</title>
+<link href="/static/404/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="top"><img src="/static/404/img/404.jpg"></div>
+<div class="tip">很抱歉，您访问的页面不存在！</div>
+</body>
+</html>

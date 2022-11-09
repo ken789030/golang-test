@@ -1,0 +1,63 @@
+{{ define "dataSearch/jackpot.html" }}
+
+{{ template "home/head.html" .head}}
+
+<div class="main">
+    {{ template "dataSearch/menu.html" .subMenuId}}
+    <form class="form-inline mt20" role="form" method="get"
+          action="" id="agentForm">
+        <!--<a onclick="showModal(1594)" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"
+                                                                          aria-hidden="true"></span> 新增</a>-->
+        <div class="btn-group">
+            <select class="form-control" id="chanId" name="chanId">
+                <option value="0">渠道</option>
+            </select>
+        </div>
+
+        <div class="btn-group">
+            <select class="form-control" id="gameId" name="gameId">
+                <option value="0">游戏</option>
+            </select>
+        </div>
+
+        <div class="input-group input-group-sm">
+            <div class="input-group-addon">开始日期</div>
+            <input name="startDt" id="startDt" type="text" class="form_datetime date form-control input-sm" size="10"
+                   data-format="yyyy-MM-dd" value="">
+        </div>
+        <div class="input-group input-group-sm">
+            <div class="input-group-addon">结束日期</div>
+            <input name="endDt" id="endDt" type="text" class="form_datetime date form-control input-sm" size="10"
+                   data-format="yyyy-MM-dd" value="">
+        </div>
+        <a onclick="searchSubmit()" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-search"
+                                                                         aria-hidden="true"></span> 搜索</a>
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>渠道</th>
+                <th>游戏</th>
+                <th>用戶ID</th>
+                <th>獲得JP金額</th>
+                <th>獲得時間</th>
+            </tr>
+            </thead>
+            <tbody>
+
+           
+            </tbody>
+        </table>
+
+    </form>
+
+    <script type="text/javascript">
+
+
+    </script>
+
+</div>
+</div>
+{{ template "home/foot.html" }}
+
+
+{{ end }}

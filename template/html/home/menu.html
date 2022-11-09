@@ -1,0 +1,46 @@
+{{ define "home/menu.html" }}
+
+<div class="sidebar">
+    <ul class="nav sidenav">
+
+        <!--  <%if $menuId == 'user'%> -->
+        
+        
+        <li  {{ if eq . "purview"  }} class="active"  {{ end }} >
+            <a href="/purview/account">
+                <span class="glyphicon glyphicon-user"></span>權限管理
+            </a>
+        </li>
+        <li  {{ if eq . "user"  }} class="active"  {{ end }}>
+            <a href="/user/member">
+                <span class="glyphicon glyphicon-cog"></span>用戶管理
+            </a>
+        </li>
+
+        <li {{ if eq . "report"  }} class="active"  {{ end }}>
+            <a href="/report/days">
+                <span class="glyphicon glyphicon-globe"></span>營收報表
+            </a>
+        </li>
+
+        <li {{ if eq . "dataSearch"  }} class="active"  {{ end }}>
+            <a href="/dataSearch/betLog">
+                <span class="glyphicon glyphicon-search"></span>數據查詢
+            </a>
+        </li>
+        <li {{ if eq . "game"  }} class="active"  {{ end }}>
+            <a href="/game/jackpotBonus">
+                <span class="glyphicon glyphicon-usd"></span>遊戲設定
+            </a>
+
+        </li>
+        <li {{ if eq . "platform"  }} class="active"  {{ end }}>
+            <a href="/platform/channel">
+                <span class="glyphicon glyphicon-usd"></span>渠道設定
+            </a>
+
+        </li>
+    </ul>
+</div>
+
+{{ end }}

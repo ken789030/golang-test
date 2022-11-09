@@ -1,0 +1,139 @@
+{{ define "game/maintainAdd.html" }}
+
+{{ template "home/head.html" .head}}
+
+<div class="main">
+    {{ template "game/menu.html" .subMenuId}}
+    <h3 class="sub-header">
+        维护管理-新增维护通知<a href="/game/maintain"
+                                                          class="btn btn-primary btn-sm pull-right mt-5"><span
+                    class="glyphicon glyphicon-share-alt"
+                    aria-hidden="true"></span>
+            返回维护通知列表</a>
+    </h3>
+    <form id="inputForm" action="" method="post"
+          class="form-horizontal mt20" role="form" novalidate="novalidate">
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">游戏</label>
+            <div class="col-sm-2">
+                <select class="form-control" name="game_Id">
+                    
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">开始日期</label>
+            <div class="col-sm-2">
+                <input name="m_sdate" id="m_sdate" type="text" class="form_datetime date form-control input-sm" size="10"
+                       data-format="yyyy-MM-dd" value="">
+           </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">结束日期</label>
+            <div class="col-sm-2">
+                <input name="m_edate" id="m_edate" type="text" class="form_datetime date form-control input-sm" size="10"
+                   data-format="yyyy-MM-dd" value="">
+            </div>
+            
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">备注</label>
+            <div class="col-sm-4">
+                <input class="form-control required" name="msg" rows="5" value=""></input>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">状态</label>
+            <div class="col-sm-2">
+                <select class="form-control" name="enable">
+                </select>
+            </div>
+        </div>
+
+        <input type="hidden" name="id" value="">
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-4">
+                <div type="button" id="save" class="btn btn-primary">确定</div>
+                <button type="reset" class="btn btn-default" onclick="javascript:history.back(1)">取消</button>
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+<script>
+    $(function () {
+        $("[data-toggle='tooltip']").tooltip();
+    });
+</script>
+
+<script>
+    //时间控件
+    $('#m_sdate').datetimepicker({
+        language: 'zh-CN',
+        todayBtn: 1,
+        minuteStep: 5,
+        format: 'yyyy-mm-dd hh:ii:ss',
+        startView : 0,
+        minView: 'hour',
+        autoclose: true,
+        endDate: $('#m_edate').val(),
+        hideIfNoPrevNext: true
+    });
+    $('#m_edate').datetimepicker({
+        language: 'zh-CN',
+        todayBtn: 1,
+        minuteStep: 5,
+        format: 'yyyy-mm-dd hh:ii:ss',
+        startView : 0,
+        minView: 'hour',
+        autoclose: true,
+        hideIfNoPrevNext: true,
+    }).on('changeDate', function () {
+        $('#m_sdate').datetimepicker('setEndDate', ($('#m_edate').val()));
+        if ($('#m_sdate').val() > $('#m_edate').val()) {
+            $('#m_sdate').val($('#m_edate').val())
+        }
+    });
+    $(document).ready(
+            function () {
+                jQuery.validator.addMethod("isGameName", function (value, element) {
+                    var length = value.length;
+                    return (length <= 20) && (length > 2);
+                }, "游戏名字由2-20位组成!");
+
+
+                $("#save").on("click", function () {
+                    $("#inputForm").validate();
+                    if ($('#inputForm').valid()) {
+                        $.ajax({
+                            type: 'POST',
+                            url: "/game/maintain/add",
+                            data: $('#inputForm').serialize(),
+                            dataType: "json", cache: false,
+                            success: function (res) {
+                                if (res.code == 0) {
+                                    $.altDialog({
+                                        title: '温馨提示',
+                                        content: "您的操作已成功",
+                                        done: function () {
+                                            location.href = '/game/maintain';
+                                        }
+                                    });
+                                } else {
+                                    $.altDialog({title:'温馨提示',content:res.msg});
+                                }
+                            }
+                        });
+                    }
+                })
+                ;
+            }
+    )
+    ;
+</script>
+{{ template "home/foot.html" }}
+
+{{ end }}

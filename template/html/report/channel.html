@@ -1,0 +1,298 @@
+{{ define "report/channel.html" }}
+
+{{ template "home/head.html" .head}}
+
+<div class="main">
+    {{ template "report/menu.html" .subMenuId}}
+    <form class="form-inline mt20" role="form" method="get"
+          action="" id="agentForm">
+        <div class="btn-group input-group-sm">
+            <select class="form-control" id="chanId" name="chanId">
+                <option value="0">渠道</option>
+            </select>
+        </div>
+        <div class="input-group input-group-sm">
+            <div class="input-group-addon">开始日期</div>
+            <input name="startDt" id="startDt" type="text" class="form_datetime date form-control input-sm" size="10"
+                   data-format="yyyy-MM-dd" value="">
+        </div>
+        <div class="input-group input-group-sm">
+            <div class="input-group-addon">结束日期</div>
+            <input name="endDt" id="endDt" type="text" class="form_datetime date form-control input-sm" size="10"
+                   data-format="yyyy-MM-dd" value="">
+        </div>
+        <a onclick="searchSubmit()" class="btn btn-primary btn-sm">
+            <span class="glyphicon glyphicon-search"  aria-hidden="true"></span> 搜索</a>
+        
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>渠道</th>
+                <th>充值金額</th>
+                <th>充值筆數</th>
+                <th>活耀人數</th>
+                <th>下注金額</th>
+                <th>總抽水</th>
+                <th>渠道營利</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            
+           
+            </tbody>
+        </table>
+    </form>
+
+    <input type="hidden" id="agentListCache" valie="">
+    <script type="text/javascript">
+
+        var changeUrl = function() {
+
+            var chanId = $("#chanId").val();
+            var endDt = $("#endDt").val();
+            var startDt = $("#startDt").val();
+
+            var url = window.location.pathname;
+            url += "?chanId=" + chanId + "&startDt=" + startDt + "&endDt=" + endDt;
+            console.log(url);
+            location.href = url;
+        }
+
+
+        $("#chanId").change(function(){
+            changeUrl();
+        });
+
+        $(function () {
+            var pageCount = 5;
+            var needCheck = false;
+            var parentName = ""
+            if (parentName != '') {
+                $("#searchName").val(parentName);
+                $("#forNormal").hide();
+            } else {
+                $("#forParent").hide();
+            }
+
+            //时间控件
+            $('#startDt').datetimepicker({
+                language: 'zh-CN',
+                autoclose: 1,
+                todayBtn: 1,
+                minuteStep: 5,
+                format: 'yyyy-mm-dd',
+                minView: 'month',
+                autoclose: true,
+                endDate: $('#endDt').val(),
+                hideIfNoPrevNext: true
+            });
+            $('#endDt').datetimepicker({
+                language: 'zh-CN',
+                autoclose: 1,
+                todayBtn: 1,
+                minuteStep: 5,
+                format: 'yyyy-mm-dd',
+                minView: 'month',
+                autoclose: true,
+                hideIfNoPrevNext: true,
+                endDate: transDate(new Date()),
+            }).on('changeDate', function () {
+                $('#startDt').datetimepicker('setEndDate', ($('#endDt').val()));
+                if ($('#startDt').val() > $('#endDt').val()) {
+                    $('#startDt').val($('#endDt').val())
+                }
+            });
+
+
+            //強制查詢欄位的開始時間跟結束時間只能輸入數字與dash(-)
+            checkCharacterIfChineseOrNot()
+
+            //使用ajax模擬檔案下載功能
+            $(".exportExcel").click(function () {
+                $("#agentForm").attr("action", "/report/agentReport/exportExcel/0");
+                $("#agentForm").submit();
+                $("#agentForm").attr("action", "/report/agentReport/index");
+                return false;
+            });
+
+            $(".exportExcelAll").click(function () {
+                if (pageCount > 20000) {
+                    needCheck = true;
+                    $('#excelModal').modal();
+                }
+                if (!needCheck) {
+                    expAll();
+                    return false;
+                }
+            });
+            $('#checkExcelBtn').click(function () {
+                if (needCheck) {
+                    $('#excelModal').modal('toggle');
+                    expAll();
+                    return false;
+                }
+            });
+
+        })
+
+        //搜尋時，進行檢查開始(結束)日期格式及是否有填寫
+
+        function searchSubmit() {
+            if (checkDate()) {
+                $("#loginNameList").val("");
+                $("#agentForm").submit();
+            } else {
+                return false;
+            }
+        }
+        function transDate(date) {
+            var d = new Date(date);
+            var newValue = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+            return newValue;
+        }
+        //针对查询条件的日期做检查，指填写其中一个日期，则会有个提示讯息以及确认键无法送出。
+        function checkDate() {
+            //checkDateValid共用js ，檢查開始日期與結束日期是否有效填入，有誤回傳為錯誤訊息，無誤回空字串
+            //param : 開始日期
+            //param : 結束日期
+            //param : 日期是否可全查 >> true 可未填入日期全查、 false 不可未填入日期
+            var errorStr = checkDateValid($('#startDt').val(), $('#endDt').val(), true);
+            //彈跳視窗顯示↓
+            if (errorStr != "") {
+                $.altDialog({title:'温馨提示',content:errorStr,done:function(){
+                }}
+        )
+        ;
+        return false;
+        }else
+        {
+            return true;
+        }
+        }
+
+        //強制查詢欄位的開始時間跟結束時間只能輸入數字與dash(-)
+        function checkCharacterIfChineseOrNot() {
+            $('#startDt,#endDt').on("input", function () {
+                var re = /^\d+[-]*\d*[-]*\d*$/;
+                //有輸入非數字的時候,強制刪除不合法的字元
+                if (!re.test(this.value)) {
+                    this.value = /^\d+[-]*\d*[-]*\d*/.exec(this.value);
+                }
+            })
+        }
+
+        function showModal(siteId) {
+            var agentListCache = $("#agentListCache");
+            var proxyBody = $("#proxyBody");
+
+            if (!agentListCache.val()) { //如果沒有資料再叫ajax
+                $.ajax({
+                    url: '/report/agentReport/searchAgentList',
+                    type: 'post',
+                    dataType: 'json',
+                    data:{'siteId':siteId},
+                    success: function (data) {
+                        agentListCache.val(data);
+                        if (data.length > 0) {
+                            $.each(data, function (i, value) {
+                                i++;
+                                proxyBody.append('<tr id="' + value + '" style="display:table-row"><td>' + i + '</td><td><input type="checkbox" name="agentCheck"></td><td>' + value + '</td></tr>')
+                            });
+
+                        } else {
+                            proxyBody.append('<tr style="display:table-row;text-align: center;"><td colspan="3">查无代理</td></tr>');
+                        }
+                    }
+                })
+            }
+            $("#addAccount").modal('show');
+        }
+
+
+        function searchProxyName() {
+            var proxyName = $("#proxyName").val();
+            if (proxyName == "") {
+                $("#proxyBody").find("tr").css("display", "table-row");
+            } else {
+                $("#proxyBody").find("tr").css("display", "none");
+                $("#" + proxyName).css("display", "table-row");
+            }
+        }
+
+        function setLoginName() {
+            var nameList = [];
+            var trList = $("#proxyBody").find("tr");
+            if ($('[name="agentCheck"]:checked').length >= 1000) {
+                $.altDialog({title:'温馨提示',content:"最多只能查询999个代理！"});
+            } else {
+                $("#proxyBody").find("tr").each(function (index) {
+                    var item = $(this);
+                    if (item.find("input") && item.find("input") != null) {
+                        if (item.find("input").prop('checked') == true) {
+                            nameList.push(item.attr("id"));
+                            item.find("input").prop('checked', false);
+                        }
+                    }
+                });
+                if (nameList.length > 0) {
+                    $("#loginNameList").val(JSON.stringify(nameList));
+                    $("#agentForm").submit();
+                }
+            }
+        }
+
+        function checkAll() {
+            var isCheckAll = $("#checkHeader").prop('checked');
+            if (isCheckAll) {
+                $("#proxyBody").find("tr").each(function (index) {
+                    var item = $(this);
+                    if (item.find("input") && item.find("input") != null) {
+                        item.find("input").prop('checked', true);
+                    }
+                });
+            } else {
+                $("#proxyBody").find("tr").each(function (index) {
+                    var item = $(this);
+                    if (item.find("input") && item.find("input") != null) {
+                        item.find("input").prop('checked', false);
+                    }
+                });
+            }
+        }
+
+        function initModal() {
+            $("#proxyName").val("");
+            searchProxyName();
+
+            $("#proxyBody").find("tr").each(function (index) {
+                var item = $(this);
+                if (item.find("input") && item.find("input") != null) {
+                    item.find("input").prop('checked', false);
+                }
+            });
+        }
+
+        //更改用户Id的值并提交表单
+        function toSubordinate(searchName) {
+            $("#resetDate").val(true);
+            $("#loginNameList").val('');
+            $("#searchName").val(searchName);
+            $("#searchAgent").submit();
+            $("#startDate").val($("#startDt").val());
+            $("#endDate").val($("#endDt").val());
+        }
+
+        function expAll() {
+            $("#agentForm").attr("action", "/report/agentReport/exportExcel/5");
+            $("#agentForm").submit();
+            $("#agentForm").attr("action", "/report/agentReport/index");
+        }
+    </script>
+
+</div>
+</div>
+{{ template "home/foot.html" }}
+
+
+{{ end }}

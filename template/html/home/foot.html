@@ -1,0 +1,30 @@
+{{ define "home/foot.html" }}
+
+<div class="alert alert-warning alert-dismissible navbar-fixed-bottom mb0 tip-bottom" role="alert"
+     id="_ie_alert_msg">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
+    </button>
+    <strong>温馨提醒：</strong> 您的浏览器版本较低，为了更好的用户体验，建议使用Chorme浏览器！
+</div>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="/assets/js/ie10-viewport-bug-workaround.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var agent = navigator.userAgent.toLowerCase();
+        var regStr_ie = /msie [\d.]+;/gi;
+        if (agent.indexOf("msie") > 0) {
+            var ieVersion = ((agent.match(regStr_ie) + "").replace(/[^0-9.]/ig, ""));
+            ieVersion = parseInt(ieVersion);
+            if (ieVersion < 9) {
+                $("#_ie_alert_msg").show();
+            }
+        }
+    })
+</script>
+</div>
+
+
+</body>
+</html>
+
+{{ end }}

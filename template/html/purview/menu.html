@@ -1,0 +1,19 @@
+{{ define "purview/menu.html"}}
+
+<div class="twoNav">
+    <ul>
+
+        <li {{ if eq . "account"  }} class="active"  {{ end }}>
+            <a href="/purview/account">成员管理</a>
+        </li>
+        <li {{ if eq . "group"  }} class="active"  {{ end }}>
+            <a href="/purview/group">组别管理</a>
+        </li>
+        <li {{ if eq . "actLog"  }} class="active"  {{ end }}>
+            <a href="/purview/actLog">操作日志</a>
+        </li>
+    </ul>
+    <div class="clearfix"></div>
+</div>
+
+{{ end }}

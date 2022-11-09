@@ -1,0 +1,24 @@
+{{ define "report/menu.html" }}
+
+<div class="twoNav">
+    <ul>
+        <li {{ if eq . "days"  }} class="active"  {{ end }}>
+            <a href="/report/days">日/月報表</a>
+        </li>
+        <li {{ if eq . "member"  }} class="active"  {{ end }}>
+            <a href="/report/member">會員報表</a>
+        </li>
+        <li {{ if eq . "channel"  }} class="active"  {{ end }}>
+            <a href="/report/channel">渠道報表</a>
+        </li>
+        <li {{ if eq . "game"  }} class="active"  {{ end }}>
+            <a href="/report/game">遊戲報表</a>
+        </li>
+        <li {{ if eq . "transfer"  }} class="active"  {{ end }}>
+            <a href="/report/transfer">用戶轉出轉入報表</a>
+        </li>
+    </ul>
+    <div class="clearfix"></div>
+</div>
+
+{{ end }}

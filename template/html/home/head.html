@@ -1,0 +1,312 @@
+{{ define "home/head.html" }}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>{{ .title }}</title>
+    <link rel="icon" href="/assets/images/favicon.ico">
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/css/style.css" rel="stylesheet">
+
+    <link href="/assets/css/black.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="/assets/css/autoSelect.css" rel="stylesheet">
+    <link href="/assets/css/jquery.toast.css" rel="stylesheet">
+    <link href="/assets/css/validate.css" rel="stylesheet">
+    <link href="/assets/css/multi-select.css" rel="stylesheet">
+    <link href="/assets/css/icon.css" rel="stylesheet">
+
+    <script src="/assets/js/ie-emulation-modes-warning.js"></script>
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="/assets/js/altDialog.js" type="text/javascript"></script>
+    <script src="/assets/js/notice-display.js" type="text/javascript"></script>
+    <script src="/assets/js/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+    <script src="/assets/js/bootstrap-datetimepicker.zh-CN.js" type="text/javascript"></script>
+    <script src="/assets/js/StringBuilder.js" type="text/javascript"></script>
+    <script src="/assets/js/bootstrap-dropdown.js" type="text/javascript"></script>
+    <script src="/assets/js/stringUtils.js" type="text/javascript"></script>
+    <script src="/assets/js/formUtils.js" type="text/javascript"></script>
+    <script src="/assets/js/jquery.validate.min.js" type="text/javascript"></script>
+    <script src="/assets/js/messages_bs_zh.js" type="text/javascript"></script>
+    <script src="/assets/js/bootstrap-paginatorForm.js" type="text/javascript"></script>
+    <script src="/assets/js/ajaxDropdown.js" type="text/javascript"></script>
+    <script src="/assets/js/autoSelect.js" type="text/javascript"></script>
+    <script src="/assets/js/bootbox.js" type="text/javascript"></script>
+    <script src="/assets/js/ajaxFormValidate.js" type="text/javascript"></script>
+    <script src="/assets/js/MaskLayer.js" type="text/javascript"></script>
+    <script src="/assets/js/jquery.json.min.js" type="text/javascript"></script>
+    <script src="/assets/js/moment.min.js" type="text/javascript"></script>
+    <script src="/assets/js/jquery.toast.js" type="text/javascript"></script>
+    <script src="/assets/js/myToast.js" type="text/javascript"></script>
+    <script src="/assets/js/checkDateValid.js" type="text/javascript"></script>
+    <script src="/assets/js/jquery.jplayer.min.js"></script>
+
+    <script src="/assets/js/html5shiv.min.js"></script>
+    <script src="/assets/js/respond.min.js"></script>
+    <script src="/assets/js/AdvancedSearch.js"></script>
+    <script src="/assets/js/jquery.multi-select.js"></script>
+
+
+
+    <script type="text/javascript" src="/assets/js/highcharts.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+
+
+            //var config={containerId：'',tipLabel：'',data：''}
+            function createPie(config) {
+                $('#' + config.containerId).highcharts({
+                    chart: {
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false
+                    },
+                    title: {
+                        text: ''
+                    },
+                    tooltip: {
+                        pointFormat: config.tipLabel + '：{point.y:.2f} <br/>{series.name}: <b>{point.percentage:.2f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: true,
+                                color: '#006ECC',
+                                connectorColor: '#006ECC',
+                                format: '<b>{point.name}</b>: {point.y:.2f} '
+                            }
+                        }
+                    },
+                    series: [{
+                        type: 'pie',
+                        name: config.tipLabel + '占比',
+                        data: config.data
+                    }]
+                });
+            }
+        });
+
+    </script>
+
+
+</head>
+
+<body class="frame-1">
+
+
+<nav class="navbar navbar-inverse navbar-fixed-top style-change" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">火鳳電子遊藝後台</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class=""><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" title="导航"><span
+                            class="glyphicon glyphicon-th-list"></span></a>
+                <ul class="dropdown-menu dropdown-box">
+                    <li>
+                        <ul class="dropdown-list">
+                            <li class="dropdown-header">用戶管理</li>
+                            <li class="divider"></li>
+                            <li class="">
+                                <a href="/user/member">會員資訊</a>
+                            </li>
+                            <li class="">
+                                <a href="/user/checkIn">人工後台補幣</a>
+                            </li>
+                            
+                        </ul>
+                    </li>
+                    <li>
+                        <ul class="dropdown-list">
+                            <li class="dropdown-header">渠道設定</li>
+                            <li class="divider"></li>
+                            <li class="">
+                                <a href="/platform/channel">渠道管理</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <ul class="dropdown-list">
+                            <li class="dropdown-header">遊戲設定</li>
+                            <li class="divider"></li>
+                            <li class="">
+                                <a href="/game/jackpotBonus">JP獎金設定</a>
+                            </li>
+                            <li class="">
+                                <a href="/game/probability">機台機率設定(暫不設定)</a>
+                            </li>
+                            <li class="">
+                                <a href="/game/maintain">遊戲維護管理</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <div class="clearfix"></div>
+                    <li>
+                        <ul class="dropdown-list">
+                            <li class="dropdown-header">營收報表</li>
+                            <li class="divider"></li>
+                            <li class="">
+                                <a href="/report/days">日/月報表</a>
+                            </li>
+                            <li class="">
+                                <a href="/report/member">會員報表</a>
+                            </li>
+                            <li class="">
+                                <a href="/report/channel">渠道報表</a>
+                            </li>
+                            <li class="">
+                                <a href="/report/game">遊戲報表</a>
+                            </li>
+                            <li class="">
+                                <a href="/report/transfer">用戶轉出轉入報表</a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <li>
+                        <ul class="dropdown-list">
+                            <li class="dropdown-header">數據查詢</li>
+                            <li class="divider"></li>
+                            <li class="">
+                                <a href="/dataSearch/betLog">用戶遊戲紀錄</a>
+                            </li>
+                            <li class="">
+                                <a href="/dataSearch/onlineUsers">在線用戶列表</a>
+                            </li>
+                            <li class="">
+                                <a href="/dataSearch/onlineUserNumber">同時在線人數</a>
+                            </li>
+                            <li class="">
+                                <a href="/dataSearch/jackpot">JP彩金查詢</a>
+                            </li>
+                            <li class="">
+                                <a href="/dataSearch/betLogRank">投注排行統計</a>
+                            </li>
+                        </ul>
+                    </li>
+
+
+
+                    <li>
+                        <ul class="dropdown-list">
+                            <li class="dropdown-header">權限管理</li>
+                            <li class="divider"></li>
+
+                            <li class="">
+                                <a href="/purview/group">组别管理</a>
+                            </li>
+                            <li class="">
+                                <a href="/purview/account">成员管理</a>
+                            </li>
+
+                            <li class=""><a href="/purview/actLog">操作日志</a>
+                            </li>
+
+                        </ul>
+                    </li>
+                   
+                </ul>
+            </li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="/dataSearch/onlineUsers" title="在线用户">
+                    <span class="glyphicon glyphicon-user">
+                        <span class="fa-reddit"></span>
+                    </span>
+                </a>
+            </li>
+            <li style="width: 250px"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false">您好，{{ .nickname }}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/">基本资料(這邊要改)</a></li>
+                    <li><a href="/">修改密码(這邊要改)</a></li>0
+                </ul>
+            </li>
+
+
+
+
+            <li><a href="/dataSearch/onlineUsers" title="在线会员"><span class="glyphicon glyphicon-user"><span
+                                class="badge-top" id="onlineUserSpan">0</span></span></a></li>
+            </li>
+            <li><a href="javascript:void(0);" id="refresh">刷新</a>
+            </li>
+            <li><a href="/loginout" title="退出"><span
+                            class="glyphicon glyphicon-off"></span></a></li>
+        </ul>
+        <div id="soundBox"
+             style="width: 1px; height: 1px; position: absolute;"></div>
+    </div>
+</nav>
+
+
+<script>
+
+    $("#refresh").click(function () {
+        getStatData();
+    });
+
+    function setCookie(name, value) {
+        var Days = 30;
+        var exp = new Date();
+        exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+        document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+    }
+
+    function getCookie(name) {
+        var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+        if (arr = document.cookie.match(reg))
+            return unescape(arr[2]);
+        else
+            return null;
+    }
+
+
+    function getStatData() {
+        $.ajax({
+            type: 'POST',
+            url: "/DataSearch.getStatData",
+            data: "",
+            dataType: "json", cache: false,
+            success: function (res) {
+                $("#deposit").html(res.pay);
+                $("#draw").html(res.draw);
+                $("#drawAgent").html(res.drawAgent);
+                $("#onlineUserSpan").html(res.online);
+
+                if (res.pay > 0) {
+                    paySound = true;
+                } else {
+                    paySound = false;
+                }
+
+                if (res.draw > 0 || res.drawAgent > 0) {
+                    drawSound = true;
+                } else {
+                    drawSound = false;
+                }
+
+            }
+        });
+    }
+
+</script>
+
+<div class="container-fluid">
+    <div class="row">
+
+    {{ template "home/menu.html" .menuId}}
+
+{{ end }}

@@ -1,0 +1,1486 @@
+{{ define  "user/member.html" }}
+
+
+{{ template "home/head.html" .head}}
+
+<div class="main">
+    {{ template "user/menu.html" .subMenuId}}
+    <form class="form-inline mt20" role="form" method="get" action=""
+          id="myform">
+        <div class="btn-group">
+            <select class="form-control" id="orderBy" name="orderBy">
+            </select>
+        </div>
+        <div class="btn-group">
+            <select class="form-control" id="sort" name="sort">
+            </select>
+        </div>
+
+        <div class="btn-group">
+            <select class="form-control" id="chanId" name="chanId">
+                <option value="0">渠道</option>
+            </select>
+        </div>
+
+        <div class="btn-group">
+            <select class="form-control" id="whiteStatu" name="whiteStatu">
+                <option value="100">黑白名单</option>
+            </select>
+        </div>
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"
+                    aria-expanded="false">全部&nbsp;<span class="caret"></span></button>
+            <ul id="accStatus" class="dropdown-menu" role="menu">
+                <li><a href="#" value="-1" class="currentSelect"
+                       style="background: lightgrey;">全部</a></li>
+                <li><a href="#" value="0">正常</a></li>
+                <li><a href="#" value="1">禁用</a></li>
+            </ul>
+        </div>
+        <div class="input-group">
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"
+                        aria-expanded="false">用户id(精确)&nbsp;<span class="caret"></span></button>
+                <ul id="searchType" class="dropdown-menu" role="menu">
+                    <li><a href="#" value="1" class="currentSelect"
+                           style="background: lightgrey;">用户id</a></li>
+                    <!-- <li><a href="#" value="6">代理id</a></li>
+                    <li><a href="#" value="7">上级id</a></li> -->
+                    <li><a href="#" value="3">用户昵称(模糊)</a></li>
+                    <li><a href="#" value="8">平台帐号(精确)</a></li>
+                    <!-- <li><a href="#" value="4">手机号码(精确)</a></li> -->
+                </ul>
+            </div>
+            <input name="searchKey" value="" id="searchKey" style="width: 125px;" type="text"
+                   class="form-control input-sm" aria-label="Text input with dropdown button">
+        </div>
+
+        <div class="btn-group">
+            <select class="form-control" name="levelType">
+                <option value="1">VIP等级</option>
+                <option value="2">等级</option>
+            </select>
+
+            <input name="lvStart" value="" type="text" class="form-control" size="5" placeholder="最小值">
+            <input name="lvEnd" value="" type="text" class="form-control" size="5" placeholder="最大值">
+        </div>
+
+        <button type="button" data-toggle="modal" data-target="#myModal5" class="btn btn-primary btn-sm">搜索条件</button>
+        <button type="button" onclick="searchSubmit()" class="btn btn-primary btn-sm"><span
+                    class="glyphicon glyphicon-search" aria-hidden="true"></span> 搜索
+        </button>
+        <a href="javascript:void(0)" onclick="exportSubmit()" class="btn btn-primary btn-sm">导出</a>
+
+        <input type="hidden" value="0" id="export" name="export">
+        
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>用户id</th>
+                <th>平台帐号</th>
+                <th class="dn">昵称</th>
+                <th>状态</th>
+                <th>黑白名单状态</th>
+                <th>渠道</th>
+                <th>账户余额</th>
+                <th>输赢统计</th>
+                <th>注册日期</th>
+                <th>最后登录时间</th>
+                <th width="150">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr>
+                <td colspan="18" class="text-center">暂无数据</td>
+            </tr>
+            </tbody>
+        </table>
+        <nav id="" class="pull-left pagination">
+            <div style="margin-top:5px;"><span>共 <big style="font-weight:bold;"></big> 条记录，当前第 <big
+                            style="font-weight:bold;"></big> 页，共 <big style="font-weight:bold;"></big> 页 </span>
+            </div>
+        </nav>
+        <nav class="pull-right">
+
+        </nav>
+        <div id="myModal5" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="false">
+            <div class="modal-backdrop fade in"></div>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" name="cancel" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel">
+                            增加查询条件<a class="anchorjs-link"
+                                     href="#myModalLabel"><span
+                                        class="anchorjs-icon"></span></a>
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="oldStartDate" id="oldStartDate" data-format="yyyy-MM-dd"
+                               placeholder="" value="">
+                        <input type="hidden" name="oldEndDate" id="oldEndDate" data-format="yyyy-MM-dd" placeholder=""
+                               value="">
+                        <table class="table table-bordered">
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+                                            data-toggle="dropdown" aria-expanded="false">范围 <span class="caret"></span>
+                                    </button>
+                                    <ul id="dateType" class="dropdown-menu" role="menu"
+                                        style="top: inherit; left: inherit;">
+                                        <li><a href="#"
+                                               value="0">新增日期</a></li>
+                                        <li><a href="#"
+                                               value="1">登录日期</a></li>
+                                    </ul>
+                                </td>
+                                <td><input name="startDate" id="startDate" type="text"
+                                           class="form-control form_datetime input-sm" data-format="yyyy-MM-dd"
+                                           data-date-format="yyyy-MM-dd" placeholder="" value="" size="15"
+                                           onblur="checkDate()"> - <input name="endDate" id="endDate" type="text"
+                                                                          class="form-control form_datetime input-sm"
+                                                                          data-format="yyyy-MM-dd"
+                                                                          data-date-format="yyyy-MM-dd" placeholder=""
+                                                                          value="" size="15" onblur="checkDate()">
+                                </td>
+
+                                <td>
+                                    <div class="quickTime" start="startDate" end="endDate" pattern="yyyy-MM-dd"></div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <span class="error" style="display:none"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="searchAdvBtn">确认</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" name="cancel">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div id="cenjiModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="false">
+        <div class="modal-backdrop fade in"></div>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="cenjiModalLabel">层级路径<a class="anchorjs-link"
+                                                                        href="#myModalLabel"><span
+                                    class="anchorjs-icon"></span></a></h4>
+                </div>
+                <div id="createtable" class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="viewRebateModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="false">
+        <div class="modal-backdrop fade in"></div>
+        <div class="modal-dialog noLowerRebate" style="width: 990px; font-size:16px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">用户“<label id="rebateAccountName"></label>”的返点情况<a
+                                class="anchorjs-link"
+                                href="#myModalLabel"><span
+                                    class="anchorjs-icon"></span></a></h4>
+                </div>
+                <form id="updateRebate">
+                    <input type="hidden" id="accountId" name="accountId" value="">
+                    <input type="hidden" id="nickName1" name="nickName" value="">
+                    <input type="hidden" id="checkRebate" name="checkRebate" value="1">
+                    <div class="modal-body" style="height: 500px;">
+                        <div class="form-group agentRebate">
+                            <label class="col-sm-2 control-label rebateTitle"><b class="text-danger">*</b> 时时彩</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    <p class="setRebate control-label">返点设置：</p>
+                                    <div class="rebate">
+                                        <input type="text" id="rebate9Td" name="rebate9.rebate"
+                                               onblur="validateRebate(9)" class="rebate" maxlength="4">
+                                    </div>
+                                    <div>
+                                        <p class="col-sm-3 padding0">
+                                            可设置返点范围：
+                                            <span id="topRebate9"></span>
+                                        </p>
+                                        <p class="lowerRebate control-label">下级返点上限设置：</p>
+                                        <div class="lowerRebate">
+                                            <input type="text" id="lowerRebate9" name="rebate9.lowerRebate"
+                                                   onblur="validateLowerRebate(9)" class="rebate" maxlength="4"
+                                                   placeholder="" rebate="" value="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group agentRebate">
+                            <label class="col-sm-2 control-label rebateTitle"><b class="text-danger">*</b> 快3</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    <p class="setRebate control-label">返点设置：</p>
+                                    <div class="rebate">
+                                        <input type="text" id="rebate10Td" name="rebate10.rebate"
+                                               onblur="validateRebate(10)" class="rebate" maxlength="4">
+                                    </div>
+                                    <div>
+                                        <p class="col-sm-3 padding0">
+                                            可设置返点范围：
+                                            <span id="topRebate10"></span>
+                                        </p>
+                                        <p class="lowerRebate control-label">下级返点上限设置：</p>
+                                        <div class="lowerRebate">
+                                            <input type="text" id="lowerRebate10" name="rebate10.lowerRebate"
+                                                   onblur="validateLowerRebate(10)" class="rebate" maxlength="4">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group agentRebate">
+                            <label class="col-sm-2 control-label rebateTitle"><b class="text-danger">*</b>11选5</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    <p class="setRebate control-label">返点设置：</p>
+                                    <div class="rebate">
+                                        <input type="text" id="rebate11Td" name="rebate11.rebate"
+                                               onblur="validateRebate(11)" class="rebate" maxlength="4">
+                                    </div>
+                                    <div>
+                                        <p class="col-sm-3 padding0">
+                                            可设置返点范围：
+                                            <span id="topRebate11"></span>
+                                        </p>
+                                        <p class="lowerRebate control-label">下级返点上限设置：</p>
+                                        <div class="lowerRebate">
+                                            <input type="text" id="lowerRebate11" name="rebate11.lowerRebate"
+                                                   onblur="validateLowerRebate(11)" class="rebate" maxlength="4">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group agentRebate">
+                            <label class="col-sm-2 control-label rebateTitle"><b class="text-danger">*</b>快乐8</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    <p class="setRebate control-label">返点设置：</p>
+                                    <div class="rebate">
+                                        <input type="text" id="rebate12Td" name="rebate12.rebate"
+                                               onblur="validateRebate(12)" class="rebate" maxlength="4">
+                                    </div>
+                                    <div>
+                                        <p class="col-sm-3 padding0">
+                                            可设置返点范围：
+                                            <span id="topRebate12"></span>
+                                        </p>
+                                        <p class="lowerRebate control-label">下级返点上限设置：</p>
+                                        <div class="lowerRebate">
+                                            <input type="text" id="lowerRebate12" name="rebate12.lowerRebate"
+                                                   onblur="validateLowerRebate(12)" class="rebate" maxlength="4">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group agentRebate">
+                            <label class="col-sm-2 control-label rebateTitle"><b class="text-danger">*</b>北京赛车</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    <p class="setRebate control-label">返点设置：</p>
+                                    <div class="rebate">
+                                        <input type="text" id="rebate13Td" name="rebate13.rebate"
+                                               onblur="validateRebate(13)" class="rebate" maxlength="4">
+                                    </div>
+                                    <div>
+                                        <p class="col-sm-3 padding0">
+                                            可设置返点范围：
+                                            <span id="topRebate13"></span>
+                                        </p>
+                                        <p class="lowerRebate control-label">下级返点上限设置：</p>
+                                        <div class="lowerRebate">
+                                            <input type="text" id="lowerRebate13" name="rebate13.lowerRebate"
+                                                   onblur="validateLowerRebate(13)" class="rebate" maxlength="4">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group agentRebate">
+                            <label class="col-sm-2 control-label rebateTitle"><b class="text-danger">*</b>福利彩票</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    <p class="setRebate control-label">返点设置：</p>
+                                    <div class="rebate">
+                                        <input type="text" id="rebate1Td" name="rebate1.rebate"
+                                               onblur="validateRebate(1)" class="rebate" maxlength="4">
+                                    </div>
+                                    <div>
+                                        <p class="col-sm-3 padding0">
+                                            可设置返点范围：
+                                            <span id="topRebate1"></span>
+                                        </p>
+                                        <p class="lowerRebate control-label">下级返点上限设置：</p>
+                                        <div class="lowerRebate">
+                                            <input type="text" id="lowerRebate1" name="rebate1.lowerRebate"
+                                                   onblur="validateLowerRebate(1)" class="rebate" maxlength="4">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group agentRebate">
+                            <label class="col-sm-2 control-label rebateTitle"><b class="text-danger">*</b>体育彩票</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    <p class="setRebate control-label">返点设置：</p>
+                                    <div class="rebate">
+                                        <input type="text" id="rebate2Td" name="rebate2.rebate"
+                                               onblur="validateRebate(2)" class="rebate" maxlength="4">
+                                    </div>
+                                    <div>
+                                        <p class="col-sm-3 padding0">
+                                            可设置返点范围：
+                                            <span id="topRebate2"></span>
+                                        </p>
+                                        <p class="lowerRebate control-label">下级返点上限设置：</p>
+                                        <div class="lowerRebate">
+                                            <input type="text" id="lowerRebate2" name="rebate2.lowerRebate"
+                                                   onblur="validateLowerRebate(2)" class="rebate" maxlength="4">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="rebate3Td" name="rebate3.rebate">
+                        <input type="hidden" id="rebate4Td" name="rebate4.rebate">
+                        <div class="form-group agentRebate">
+                            <label class="col-sm-2 control-label rebateTitle"><b class="text-danger">*</b>六合彩</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    <p class="setRebate control-label">返点设置：</p>
+                                    <div class="rebate">
+                                        <input type="text" id="rebate5Td" name="rebate5.rebate"
+                                               onblur="validateRebate(5)" class="rebate" maxlength="4">
+                                    </div>
+                                    <div>
+                                        <p class="col-sm-3 padding0">
+                                            可设置返点范围：
+                                            <span id="topRebate5"></span>
+                                        </p>
+                                        <p class="lowerRebate control-label">下级返点上限设置：</p>
+                                        <div class="lowerRebate">
+                                            <input type="text" id="lowerRebate5" name="rebate5.lowerRebate"
+                                                   onblur="validateLowerRebate(5)" class="rebate" maxlength="4">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group agentRebate">
+                            <label class="col-sm-2 control-label rebateTitle"><b
+                                        class="text-danger">*</b>幸运28/QQ返点</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    <p class="setRebate control-label">返点设置：</p>
+                                    <div class="rebate">
+                                        <input type="text" id="rebate14Td" name="rebate14.rebate"
+                                               onblur="validateRebate(14)" class="rebate" maxlength="4">
+                                    </div>
+                                    <div>
+                                        <p class="col-sm-3 padding0">
+                                            可设置返点范围：
+                                            <span id="topRebate14"></span>
+                                        </p>
+                                        <p class="lowerRebate control-label">下级返点上限设置：</p>
+                                        <div class="lowerRebate">
+                                            <input type="text" id="lowerRebate14" name="rebate14.lowerRebate"
+                                                   onblur="validateLowerRebate(14)" class="rebate" maxlength="4">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer" style="text-align:center;margin-top:20px;">
+                    <div class="col-sm-6" style="text-align:left">
+                        温馨提示：
+                        <div>1. 下级返点上限栏不设值或空白，开户链结的返点范围设置以该代理本身返点为上限</div>
+                        <div>2. 下级返点上限栏的值不得大于该代理本身返点上限</div>
+                    </div>
+                    <div class="col-sm-6" style="text-align:right">
+                        <button type="button" id="save" class="btn btn-primary">提交保存</button>
+                        <button type="reset" id="reset" class="btn btn-default">重置</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="controlModel" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="false">
+        <div class="modal-backdrop fade in"></div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">您正在对用户“<span id="cmName"></span>”进行以下操作</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered table-hover">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="button" class="btn btn-sm">启用</button>
+                                    <button type="button" class="btn btn-sm">禁用</button>
+                                </div>
+                            </td>
+                            <td>启用或关闭该用户，停用将使用户无法登录</td>
+                        </tr>
+                        <!--
+                        <tr>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="button" class="btn btn-sm">非测试</button>
+                                    <button type="button" class="btn btn-sm">测试</button>
+                                </div>
+                            </td>
+                            <td>测试,将用户变为测试账号</td>
+                        </tr>-->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="controlModel2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="false">
+        <div class="modal-backdrop fade in"></div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">您正在对用户“<span id="cmName2"></span>”进行以下操作</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered table-hover">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="button" class="btn btn-sm" style="display: none;"></button>
+                                    <button type="button" class="btn btn-sm" style="display: none;"></button>
+                                    <button type="button" class="btn btn-sm">未激活</button>
+                                    <button type="button" class="btn btn-sm">激活</button>
+                                </div>
+                            </td>
+                            <td>激活用户，激活将使用户可以使用</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="button" class="btn btn-sm">允许投注</button>
+                                    <button type="button" class="btn btn-sm">暂停投注</button>
+                                </div>
+                            </td>
+                            <td>暂停该用户的投注功能，用户可以正常登录</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="button" class="btn btn-sm">解冻</button>
+                                    <button type="button" class="btn btn-sm">冻结</button>
+                                </div>
+                            </td>
+                            <td>用户连续多次登录失败将被冻结帐号</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="button" class="btn btn-sm">拉白</button>
+                                    <button type="button" class="btn btn-sm">拉黑</button>
+                                </div>
+                            </td>
+                            <td>拉黑后此用户可以正常投注，但无法存取</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="viewLockModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="false">
+        <div class="modal-backdrop fade in"></div>
+        <div class="modal-dialog" style="width: 600px; height: 400px; font-size:16px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">用户“<label id="lockAccountName"></label>”的状态变更事由如下<a
+                                class="anchorjs-link"
+                                href="#myModalLabel"><span
+                                    class="anchorjs-icon"></span></a></h4>
+                </div>
+                <div class="modal-body" style="height: 300px;">
+                    <table width="100%">
+                        <thead>
+                        <tr height="40px">
+                            <th width="23%" style="padding-left: 5px;">状态</th>
+                            <th width="45%" style="padding-left: 5px;">事由</th>
+                            <th width="32%" style="padding-left: 5px;">发生时间</th>
+                        </tr>
+                        </thead>
+                    </table>
+                    <table width="100%" class="table table-bordered table-hover" style="font-size: 11pt">
+                        <tbody>
+                        <tr height="45">
+                            <td id="us1" width="23%"></td>
+                            <td id="us2" width="45%"></td>
+                            <td id="us3" width="32%"></td>
+                        </tr>
+                        <tr height="45">
+                            <td id="bt1"></td>
+                            <td id="bt2"></td>
+                            <td id="bt3"></td>
+                        </tr>
+                        <tr height="45">
+                            <td id="fz1"></td>
+                            <td id="fz2"></td>
+                            <td id="fz3"></td>
+                        </tr>
+                        <tr height="45">
+                            <td id="bk1"></td>
+                            <td id="bk2"></td>
+                            <td id="bk3"></td>
+                        </tr>
+                        <tr height="45">
+                            <td id="ko1"></td>
+                            <td id="ko2"></td>
+                            <td id="ko3"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer" style="text-align:center;margin-top:20px;">
+                    <div class="col-sm-6" style="text-align:left"></div>
+                    <div class="col-sm-6" style="text-align:right">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        
+        $("#back").click(function () {
+            window.history.go(-1);
+        });
+        $(document).ready(function () {
+            $("[data-toggle='popover']").popover();
+            $("[data-toggle='tooltip']").tooltip();
+        });
+
+
+        var changeUrl = function() {
+            var orderBy = $("#orderBy").val();
+            var sort = $("#sort").val();
+            var whiteStatu = $("#whiteStatu").val();
+            var chanId = $("#chanId").val();
+            var url = window.location.pathname;
+            url += "?orderBy=" + orderBy + "&sort=" + sort + "&whiteStatu=" + whiteStatu + "&chanId=" + chanId;
+            console.log(url);
+            location.href = url;
+        }
+
+
+        $("#orderBy, #sort,#whiteStatu,#chanId").change(function(){
+            changeUrl();
+        });
+
+        (function () {
+
+            //时间控件
+            $('.form_datetime').datetimepicker({
+                language: 'zh-CN',
+                todayBtn: true,
+                minuteStep: 1,
+                format: 'yyyy-mm-dd',
+                minView: 'month',
+                autoclose: true
+            });
+
+            //下拉框
+            $('#level').dropdown({
+                name: "level",
+                current_value: ""
+            });
+            $('#userLevel').dropdown({
+                name: "userLevel",
+                current_value: ""
+            });
+            $('#vipUserLevel').dropdown({
+                name: "vipUserLevel",
+                current_value: ""
+            });
+            $('#userType').dropdown({
+                name: "userType",
+                current_value: ""
+            });
+            $('#accStatus').dropdown({
+                name: "accStatus",
+                current_value: "-1"
+            });
+            $('#dateType').dropdown({
+                name: "dateType",
+                current_value: ""
+            });
+            $('#searchType').dropdown({
+                name: "searchType",
+                current_value: "1",
+                callback: function (val) {
+                    if (val == '' || val == 0) {
+                        $("#searchUserStatus").show();
+                    }
+                    else {
+                        $('#searchUserStatus').hide();
+                    }
+                }
+            });
+
+            $('#themeDown').dropdown({
+                name: "rgThmem",
+                isDefBack: true,
+                current_value: ""
+            });
+
+            //查看返点
+            $("a[name='viewRebateBtn']").on("click", function (e) {
+                removeErrorMsg();
+                $("#save").removeAttr("disabled");
+                var self = $(this);
+                var accountId = self.attr("accountId");
+                var accountName = self.attr("accountName");
+                $("#rebateAccountName").html(accountName);
+
+                getRebate(accountId);
+            });
+
+            //重置返点
+            $("#reset").on("click", function () {
+                removeErrorMsg();
+                var accountId = $("#accountId").val();
+                getRebate(accountId);
+                $("#save").removeAttr("disabled");
+
+            });
+
+            //返點欄位限制1位小數
+            var floatReg = /^[0-9]+(.[0-9]{1,1})?$/;
+            var reg = /^[0-9]+(.[0-9]{1,})?$/;
+            $(".rebate").on("keyup", function () {
+                var value = $(this).val();
+                if (reg.test(value)) {
+                    if (!floatReg.test(value)) {
+                        $(this).val(value.substring(0, 3));
+                    }
+                }
+            });
+
+            //更新返點
+            $("#save").on("click", function () {
+
+// 				var rebateArr = ['9','10','11','12','13','1','2','3','4','5']; //,'6','7','8'
+                var rebateArr = ['9', '10', '11', '12', '13', '1', '2', '5', '14', '15'];
+                var focusTarget;
+                var isSubmit = true;
+
+                var floatReg = /^[0-9]+(.[0-9]{1,1})?$/; //只能小數1位
+                var reg = /^[0-9]+$/;
+                var reg1 = /^[^~!@#$%^&*()_+\s]+$/;
+
+                for (var i = 0; i < rebateArr.length; i++) {
+                    validateRebate(rebateArr[i])
+                    validateLowerRebate(rebateArr[i], null, true)
+                }
+                for (var i = 0; i < rebateArr.length; i++) {
+                    if ($('.rebateLowerErrorMsg' + rebateArr[i]).length > 0) {
+                        isSubmit = false;
+                    } else if ($('.rebateErrorMsg' + rebateArr[i]).length > 0) {
+                        isSubmit = false;
+                    }
+                }
+                if (isSubmit) {
+                    $("#save").removeAttr("disabled");
+                    $.ajax({
+                        url: "/user/acc/updateRebate",
+                        type: "POST",
+                        data: $('#updateRebate').serialize(),
+                        dataType: "json",
+                        async: false,
+                        cache: false,
+                        success: function (result) {
+                            if (result.status) {
+                                location.reload();
+                            } else {
+                                $.altDialog({
+                                    title: "消息提醒",
+                                    content: result.msg
+                                });
+                            }
+                        }
+                    })
+                } else {
+                    $('#rebate' + focusTarget).focus();
+                    $("#save").attr("disabled", "disabled");
+                }
+            });
+
+            $("#flashAccMoney").click(function () {
+                var self = $(this);
+                var accountId = self.attr("accountId");
+                $.ajax({
+                    url: App.ctx + "/user/acc/doUpdateSessionMoney?accId=" + accountId,
+                    data:{id:accountId},
+                    dataType: "json",
+                    cache: false
+                })
+                        .done(function (res) {
+                            if (res.status) {
+                                $.altDialog({
+                                    title: "消息提醒",
+                                    content: "刷新成功!",
+                                    done: function () {
+                                        $("a[accountId='" + accountId + "'][name='viewMoneyBtn']").click();
+                                    }
+                                });
+                            } else {
+                                $.altDialog({
+                                    title: "消息提醒",
+                                    content: res.msg
+                                })
+                            }
+                        });
+            });
+
+            //查看总资产
+            $("a[name='viewMoneyBtn']").click(function () {
+                var self = $(this);
+                var accountId = self.attr("accountId");
+                var accountName = self.attr("accountName");
+
+                $("#flashAccMoney").attr("accountId", accountId);
+
+                $("#moneyAccountName").html(accountName);
+                $.ajax({
+                    url: App.ctx + "/user/acc/viewMoney",
+                    data:{id:accountId},
+                    dataType: "json",
+                    cache: false,
+                    success: function (result) {
+                        if (result.status == 'true') {
+                            $("#platFormMoneyTd").html(0.00);
+                            $("#freezeMoneyTd").html(0.00);
+                            $("#totalMoneyTd").html(0.00);
+                            var totalMoney = 0;
+                            var authMoney = result.authMoney;
+                            if (authMoney != null) {
+                                if (authMoney.money != null) {
+                                    $("#platFormMoneyTd").html(authMoney.money == null ? 0.00 : authMoney.money.toFixed(2));
+                                }
+                                if (authMoney.freezeMoney != null) {
+                                    $("#freezeMoneyTd").html(authMoney.freezeMoney == null ? 0.00 : authMoney.freezeMoney.toFixed(2));
+                                }
+                                var authOtherMoneyList = authMoney.authOtherMoneyList;
+                                if (authOtherMoneyList != null) {
+                                    for (var i = 0; i < authOtherMoneyList.length; i++) {
+                                        var authOtherMoney = authOtherMoneyList[i];
+                                        if (authOtherMoney.money != null) {
+                                            $("#" + authOtherMoney.code.toLowerCase() + "MoneyTd").html(authOtherMoney.money.toFixed(2) == null ? 0.00 : authOtherMoney.money.toFixed(2));
+                                            $("#" + authOtherMoney.code.toLowerCase() + "UpdateDateTime").html(new Date(authOtherMoney.updateTime).Format("yyyy-MM-dd hh:mm:ss"));
+                                        }
+                                    }
+                                }
+                                $("#lastUpdateDate").html(authMoney.updateDate);
+                                $("#totalMoneyTd").html(authMoney.totalMoney.toFixed(2) == null ? 0.00 : authMoney.totalMoneyScale2.toFixed(2));
+                            }
+                            $("#viewMoneyModal").modal("show");
+                        } else {
+                            $.altDialog({
+                                title: "消息提醒",
+                                content: result.errMsg
+                            });
+                        }
+                    }
+                });
+            });
+            //查询团队余额
+            $("a[name='subordinatesBtn']").click(function () {
+                var self = $(this);
+                var accountId = self.attr("accountId");
+                var accountName = self.attr("accountName");
+                var accountIdPath = self.attr("accountIdPath");
+                $.ajax({
+                    url: App.ctx + "/user/acc/queryTearmMoney",
+                    data:{id:accountId,accountIdPath:accountIdPath},
+                    dataType: "json",
+                    cache: false,
+                    success: function (result) {
+                        if (result.status) {
+                            var money = result.tearmMoney.toFixed(2) == null ? 0.00 : result.tearmMoney.toFixed(2);
+                            $.altDialog({
+                                title: "团队余额：",
+                                content: '用户 "' + accountName + '" 的团队余额为：' + money
+                            });
+                        } else {
+                            $.altDialog({
+                                title: "消息提醒",
+                                content: result.msg
+                            });
+                        }
+                    }
+                });
+            });
+
+            //查看会员异常状态变更事由
+            $("a[name='viewLockBtn']").on("click", function (e) {
+                removeErrorMsg();
+                $("#save").removeAttr("disabled");
+                var self = $(this);
+                var accountId = self.attr("accountId");
+                var accountName = self.attr("accountName");
+                $("#lockAccountName").html(accountName);
+
+                getLock(accountId);
+            });
+
+            //时间选择器显示时触发
+            $('#startDate')
+                    .datetimepicker()
+                    .on('show', function (ev) {
+                        $('#startDate').datetimepicker('setEndDate', new Date());
+                    }).change(function () {
+                checkDate();
+            });
+
+            //时间选择器显示时触发
+            $('#endDate')
+                    .datetimepicker()
+                    .on('show', function (ev) {
+                        $('#endDate').datetimepicker('setEndDate', new Date());
+                    })
+                    .change(function () {
+                        checkDate();
+                    });
+
+            //下拉選擇期間
+            $(".quickTime").click(function () {
+                checkDate();
+            });
+
+            //查詢條件設置判斷↓↓↓↓↓
+            //取消後，日期重置
+            $("button[name='cancel']").click(function () {
+                butCnl();
+            });
+
+            //查詢條件確定後， 紀錄設定的日期
+            $("#searchAdvBtn").click(function () {
+                $('#oldStartDate').val($("#startDate").val());
+                $('#oldEndDate').val($("#endDate").val());
+            });
+            //按下重置清空ERROR狀態
+            $('#reset').on("click", function () {
+                $(".error").remove();
+            });
+
+        })();
+
+        //针对查询条件的日期做检查，指填写其中一个日期，则会有个提示讯息以及确认键无法送出。
+        function checkDate() {
+            //checkDateValid共用js ，檢查開始日期與結束日期是否有效填入，有誤回傳為錯誤訊息，無誤回空字串
+            //param : 開始日期
+            //param : 結束日期
+            //param : 日期是否可全查 >> true 可全查、 false 不可全查
+            var errorStr = checkDateValid($('#startDate').val(), $('#endDate').val(), false);
+            //彈跳視窗顯示↓
+            if (errorStr == "") {
+                $("span.error").css("display", "none");
+                $('#searchAdvBtn').removeAttr("disabled");
+            } else {
+                $('#searchAdvBtn').attr("disabled", true);
+                $("span.error").css("display", "inline");
+            }
+            $("span.error").html(errorStr);
+        }
+
+        //查詢條件取消或是"X"，將重置之前的日期
+        function butCnl() {
+            $("span.error").html("");
+            $("span.error").css("display", "none");
+            $('#searchAdvBtn').removeAttr("disabled");
+            $('#startDate').val($("#oldStartDate").val());
+            $('#endDate').val($("#oldEndDate").val());
+        }
+        // 对Date的扩展，将 Date 转化为指定格式的String
+        // 月(M)、日(d)、小时(h)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符，
+        // 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字)
+        // 例子：
+        // (new Date()).Format("yyyy-MM-dd hh:mm:ss.S") ==> 2006-07-02 08:09:04.423
+        // (new Date()).Format("yyyy-M-d h:m:s.S")      ==> 2006-7-2 8:9:4.18
+        Date.prototype.Format = function (fmt) { //author: meizz
+            var o = {
+                "M+": this.getMonth() + 1, //月份
+                "d+": this.getDate(), //日
+                "h+": this.getHours(), //小时
+                "m+": this.getMinutes(), //分
+                "s+": this.getSeconds(), //秒
+                "q+": Math.floor((this.getMonth() + 3) / 3),    //季度
+                "S": this.getMilliseconds()        //毫秒
+            };
+            if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        }
+
+        function showPath(path) {
+
+
+            if (path) {
+
+                $("#createtable").html('');
+                var table = $('<table class="table table-bordered table-hover">');
+                var tableHead = '';
+                // var tableBody='<tr>';
+
+                var len = path.split("/");
+                len.pop();
+
+                lenKey = Math.ceil(len.length / 6);
+                var lenLever = {};
+                for (var i = 0; i < lenKey; i++) {
+                    lenLever[i] = [];
+                }
+
+                for (var i = 1; i < len.length + 1; i++) {
+                    var _key = Math.ceil(i / 6);
+                    if (_key > 0) _key--;
+                    lenLever[_key].push({
+                        txt: '层级' + (i ? i : 1),
+                        name: len[i - 1]
+                    })
+
+                }
+
+                for (var key in lenLever) {
+
+                    var oneList = lenLever[key];
+
+
+                    (function (oneList) {
+                        tableHead += "<tr>";
+                        for (var i = 0; i < oneList.length; i++) {
+
+
+                            tableHead += '<td>' + oneList[i]['txt'] + '</td>';
+                            tableHead += '<td>' + oneList[i]['name'] + '</td>';
+
+                        }
+                        tableHead += "</tr>";
+
+                    })(oneList)
+                }
+
+
+                table.append(tableHead);
+
+
+                $("#createtable").append(table);
+
+                $("#cenjiModal").modal("show");
+
+            }
+        }
+
+        function toSubordinate(name) {
+
+        }
+
+        function searchSubmit() {
+            $("#parentName").val("");
+            $("[name='pageNo']").val("1");
+            $("#myform").submit();
+        }
+
+        function exportSubmit() {
+            $("#export").val(1);
+            $("#myform").submit();
+        }
+
+        var currentUserId = "";
+        var currentUserName = "";
+
+        function showControlModal2(obj, id, checkUseStatus) {
+            currentUserId = id;
+            var modal = $("#controlModel2");
+            var $obj = $(obj);
+            var str = $obj.attr("status-list");
+            var strs = str.split("|");
+            var ysd = $obj.parent().parent().children('td');
+            currentUserName = ysd.eq("1").html();
+            $("#cmName2").html(currentUserName);
+
+            var btnGroup = modal.find(".btn-group");
+            btnGroup.each(function (i) {
+                $(this).find("button").each(function (j) {
+                    var btn = $(this);
+                    btn.off();
+                    btn.removeClass();
+                    if (strs[i] == '2'){//被链锁
+                            btn.addClass("btn btn-sm btn-default");
+                            btn.prop("disabled",true);
+                            }else
+                    if (strs[i] == '3'){//激活
+                            if(j == 2){
+                            btn.addClass("btn btn-sm btn-primary");
+                            btn.prop("disabled",true);
+                            }else
+                    {
+                        btn.addClass("btn btn-sm btn-default");
+                        btn.prop("disabled", false);
+                        btn.bind("click", new Function("changeUserStatus(" + (i) + "," + (j) + ")"));
+                    }
+                }
+                else
+                if (j == parseInt(strs[i])) {
+                    btn.addClass("btn btn-sm btn-primary");
+                    btn.prop("disabled", true);
+                } else {
+                    btn.addClass("btn btn-sm btn-default");
+                    btn.prop("disabled", false);
+                    btn.bind("click", new Function("changeUserStatus(" + (i) + "," + (j) + ")"));
+                }
+
+            });
+        }
+        )
+        ;
+        modal.modal("show");
+        }
+
+
+        function showControlModal(obj, id) {
+            currentUserId = id;
+            var modal = $("#controlModel");
+            var $obj = $(obj);
+            var str = $obj.attr("status-list");
+            var strs = str.split("|");
+            var ysd = $obj.parent().parent().children('td');
+            currentUserName = ysd.eq("1").html();
+            $("#cmName").html(currentUserName);
+            console.log(strs);
+            var btnGroup = modal.find(".btn-group");
+            btnGroup.each(function (i) {
+                $(this).find("button").each(function (j) {
+                    var btn = $(this);
+                    btn.off();
+                    btn.removeClass();
+                    console.log(j, i);
+                    if (j == parseInt(strs[i])) {
+                        btn.addClass("btn btn-sm btn-primary");
+                        btn.prop("disabled", true);
+                    } else {
+                        btn.addClass("btn btn-sm btn-default");
+                        btn.prop("disabled", false);
+                        btn.bind("click", new Function("changeUserStatus(" + (i) + "," + (j) + ")"));
+                    }
+
+                });
+            });
+            modal.modal("show");
+        }
+
+
+        function changeUserStatus(i, j) {
+            var content;
+            var matter;
+            switch (i) {
+                case 0:
+                    matter = (j == 0 ? "启用" : j == 1 ? "禁用" : j == 2 ? "未激活" : "激活") + "用户" + currentUserName;
+                    break;
+                case 1:
+                    matter = "将" + currentUserName + "变为" + (j == 1 ? "测试" : "非测试");
+                    break;
+                case 2:
+                    matter = (j == 0 ? "解冻" : "冻结") + "用户" + currentUserName;
+                    break;
+                case 3:
+                    matter = (j == 0 ? "拉白" : "拉黑") + "用户" + currentUserName;
+                    break;
+            }
+            content = "确定" + matter + "?";
+
+            $.altDialog({
+                title: "提示",
+                'content': content,
+                style: "confirm",
+                done: function () {
+                    $.ajax({
+                        url: "/User/Member/changeStatus",
+                        type: "post",
+                        dataType: "json",
+                        data:{id:currentUserId,task:i,status:j}
+                    }).done(function (result) {
+                        if (result.code != 0) {
+                            $.altDialog({
+                                title: "消息提醒",
+                                content: result.msg
+                            });
+                        } else {
+                            $.altDialog({title:'提示',content:matter+"成功!",done:function(){
+                                if($('#searchKey').val() !== '' && $('#searchKey').val() !== undefined){
+                                $('#parentName').val('');
+                                }else
+                                {
+                                    $('#parentName').val(result.parentName);
+                                }
+                            window.location.reload();
+                            
+                        }
+                    });
+                }
+
+            }).fail(function () {
+                $.altDialog({title:'提示',content:matter+"失败!",done:function(){
+                $("#myform").submit();
+                }});
+        }
+        )
+        ;
+        }
+        })
+        ;
+        }
+
+        function offlineUser(obj, id) {
+            var $obj = $(obj);
+            var ysd = $obj.parent().parent().children('td');
+            currentUserName = ysd.eq("1").html();
+
+            content = "确定对用户" +currentUserName + "进行踢人?";
+
+            $.altDialog({
+                title: "提示",
+                'content': content,
+                style: "confirm",
+                done: function () {
+                    $.ajax({
+                        url: "/User/Member/offline",
+                        type: "post",
+                        dataType: "json",
+                        data:{id:id}
+                    }).done(function (result) {
+                        if (result.code != 0) {
+                            $.altDialog({
+                                title: "消息提醒",
+                                content: result.msg
+                            });
+                        } else {
+                            $.altDialog({
+                                title:'提示',
+                                content:"踢人成功!"
+                            });
+                }
+
+            }).fail(function () {
+                $.altDialog({title:'提示',content:matter+"失败!",done:function(){
+                $("#myform").submit();
+                }});
+        }
+        )
+        ;
+        }
+        })
+        ;
+        }
+
+        function openLoginTimeWindow(loginName) {
+            console.log(loginName);
+            window.location.href = "/Employee.loginLog?account=" + loginName;
+        }
+
+        function resetHeight(iframe) {
+            setTimeout(function () {
+                if (iframe.contentWindow.document.body.childNodes[0]) {
+                    var h = iframe.contentWindow.document.body.childNodes[0].offsetHeight + 100;
+                    $('#LoginTimeWindow .modal-body').css("height", h + "px");
+                }
+            }, 100);
+        }//function resetHeight
+
+        function getRebate(accountId) {
+            $.ajax({
+                url: "/user/acc/viewRebate",
+                data:{id:accountId},
+                dataType: "json",
+                cache: false,
+                success: function (result) {
+                    if (result.status) {
+                        $("#rebate9Td").val(result.rebate9.rebate.toFixed(1));
+                        $("#rebate10Td").val(result.rebate10.rebate.toFixed(1));
+                        $("#rebate11Td").val(result.rebate11.rebate.toFixed(1));
+                        $("#rebate12Td").val(result.rebate12.rebate.toFixed(1));
+                        $("#rebate13Td").val(result.rebate13.rebate.toFixed(1));
+                        $("#rebate1Td").val(result.rebate1.rebate.toFixed(1));
+                        $("#rebate2Td").val(result.rebate2.rebate.toFixed(1));
+                        $("#rebate3Td").val(result.rebate3.rebate.toFixed(1));
+                        $("#rebate4Td").val(result.rebate4.rebate.toFixed(1));
+                        $("#rebate5Td").val(result.rebate5.rebate.toFixed(1));
+                        $("#rebate14Td").val(result.rebate14.rebate.toFixed(1));
+                        $("#rebate15Td").val(result.rebate15.rebate.toFixed(1));
+                        $("#topRebate9").html(result.rebate9.parentRebate.toFixed(1));
+                        $("#topRebate10").html(result.rebate10.parentRebate.toFixed(1));
+                        $("#topRebate11").html(result.rebate11.parentRebate.toFixed(1));
+                        $("#topRebate12").html(result.rebate12.parentRebate.toFixed(1));
+                        $("#topRebate13").html(result.rebate13.parentRebate.toFixed(1));
+                        $("#topRebate1").html(result.rebate1.parentRebate.toFixed(1));
+                        $("#topRebate2").html(result.rebate2.parentRebate.toFixed(1));
+// 	        			 $("#topRebate3").html(result.rebate3.parentRebate.toFixed(1));
+// 	        			 $("#topRebate4").html(result.rebate4.parentRebate.toFixed(1));
+                        $("#topRebate5").html(result.rebate5.parentRebate.toFixed(1));
+                        $("#topRebate14").html(result.rebate14.parentRebate.toFixed(1));
+                        $("#topRebate15").html(result.rebate15.parentRebate.toFixed(1));
+                        $("#accountId").val(result.acc.id);
+                        $("#lowerRebate9").val(result.rebate9.lowerRebate);
+                        $("#lowerRebate10").val(result.rebate10.lowerRebate);
+                        $("#lowerRebate11").val(result.rebate11.lowerRebate);
+                        $("#lowerRebate12").val(result.rebate12.lowerRebate);
+                        $("#lowerRebate13").val(result.rebate13.lowerRebate);
+                        $("#lowerRebate1").val(result.rebate1.lowerRebate);
+                        $("#lowerRebate2").val(result.rebate2.lowerRebate);
+// 	        			 $("#lowerRebate3").val(result.rebate3.lowerRebate);
+// 	        			 $("#lowerRebate4").val(result.rebate4.lowerRebate);
+                        $("#lowerRebate5").val(result.rebate5.lowerRebate);
+                        $("#lowerRebate14").val(result.rebate14.lowerRebate);
+                        $("#lowerRebate15").val(result.rebate15.lowerRebate);
+                        $("#nickName1").val(result.nickName);
+                        if (result.acc.type == '1') {
+                            $('.noLowerRebate').css('width', '970px');
+                            $('.lowerRebate').hide();
+                        } else {
+                            $('.noLowerRebate').css('width', '1080px');
+                            $('.lowerRebate').show();
+                        }
+                        $("#viewRebateModal").modal("show");
+                    } else {
+                        $.altDialog({
+                            title: "消息提醒",
+                            content: result.msg
+                        });
+                    }
+                }
+            });
+        }//function getRebate
+
+        function validateRebate(type) {
+            $('.rebateErrorMsg' + type).remove();
+            var hasError = false;
+            var hasLowerError = false;
+            var rebateArr = ['9', '10', '11', '12', '13', '1', '2', '3', '4', '5', '14', '15'];
+
+            var floatReg = /^[0-9]+(.[0-9]{1,1})?$/; //只能小數1位
+            var reg = /^[0-9]+$/;
+            var reg1 = /^[^~!@#$%^&*()_+\s]+$/; //排除特殊字元
+            var isDisable = false;
+            var max = $("#topRebate" + type).html().trim();
+            var rebate = $('#rebate' + type + "Td").val();
+            if (rebate == undefined || rebate == null || rebate == "") {
+                isDisable = true;
+                $('<span class="error rebateErrorMsg' + type + '">必填栏位</span>').insertAfter('#rebate' + type + "Td");
+            } else if (!reg1.test(rebate)) {
+                isDisable = true;
+                $('<span class="error rebateErrorMsg' + type + '">格式错误</span>').insertAfter('#rebate' + type + "Td");
+            } else if (!reg.test(rebate) && !floatReg.test(rebate)) {
+                isDisable = true;
+                $('<span class="error rebateErrorMsg' + type + '">格式错误</span>').insertAfter('#rebate' + type + "Td");
+            } else if ((rebate * 1) > max * 1) {
+                isDisable = true;
+                $('<span class="error rebateErrorMsg' + type + '">返点设置超过范围</span>').insertAfter('#rebate' + type + "Td");
+            }
+            for (var i = 0; i < rebateArr.length; i++) {
+                if ($('.rebateErrorMsg' + rebateArr[i]).length > 0) {
+                    hasError = true;
+                }
+                if ($('.rebateLowerErrorMsg' + rebateArr[i]).length > 0) {
+                    hasLowerError = true;
+                }
+            }
+            if (isDisable && hasError) {
+                $("#save").attr("disabled", "disabled");
+                if ($('#lowerRebate' + type).val() != '') {
+                    validateLowerRebate(type, "fun")
+                }
+            } else if (validateLowerRebate(type, "fun", true)) {
+                $("#save").attr("disabled", "disabled");
+            } else {
+                $("#save").removeAttr("disabled");
+            }
+        }//function validateRebate
+
+        function removeErrorMsg() {
+// 			var rebateArr = ['9','10','11','12','13','1','2','3','4','5'];
+            var rebateArr = ['9', '10', '11', '12', '13', '1', '2', '5', '14', '15'];
+            for (var i = 0; i < rebateArr.length; i++) {
+                $('.rebateErrorMsg' + rebateArr[i]).remove();
+                $('.rebateLowerErrorMsg' + rebateArr[i]).remove();
+            }
+        }//function removeErrorMsg
+
+        function validateLowerRebate(type, fun, isSubmit) {
+            $('.rebateLowerErrorMsg' + type).remove();
+            var hasError = false;
+//         	var rebateArr = ['9','10','11','12','13','1','2','3','4','5'];
+            var rebateArr = ['9', '10', '11', '12', '13', '1', '2', '5', '14', '15'];
+            for (var i = 0; i < rebateArr.length; i++) {
+                if ($('.rebateLowerErrorMsg' + rebateArr[i]).length > 0) {
+                    hasError = true;
+                }
+                if ($('.rebateErrorMsg' + rebateArr[i]).length > 0) {
+                    hasError = true;
+                }
+            }
+            var floatReg = /^[0-9]+(.[0-9]{1,1})?$/; //只能小數1位
+            var reg = /^[0-9]+$/;
+            var reg1 = /^[^~!@#$%^&*()_+\s]+$/; //排除特殊字元
+            var isDisable = false;
+            var max = $('#rebate' + type + "Td").val();
+            var rebate = $('#lowerRebate' + type).val();
+            if (max == '' && rebate != '') {
+                isDisable = true;
+                $('<span class="error rebateLowerErrorMsg' + type + '">请先设置彩种自身返点</span>').insertAfter('#lowerRebate' + type);
+            } else if (!reg1.test(rebate) && rebate != '') {
+                isDisable = true;
+                $('<span class="error rebateLowerErrorMsg' + type + '">格式错误</span>').insertAfter('#lowerRebate' + type);
+            } else if (!reg.test(rebate) && !floatReg.test(rebate) && rebate != '') {
+                isDisable = true;
+                $('<span class="error rebateLowerErrorMsg' + type + '">格式错误</span>').insertAfter('#lowerRebate' + type);
+            } else if ((rebate * 1) > max) {
+                isDisable = true;
+                $('<span class="error rebateLowerErrorMsg' + type + '">返点设置超过范围</span>').insertAfter('#lowerRebate' + type);
+            }
+            if (rebate != '' && !isDisable && !isSubmit) { //送出前不想檢查 太恐怖
+                $.ajax({
+                    type: 'POST',
+                    url: "/user/acc/checkLowerRebate",
+                    data: {
+                        "type": type,
+                        "rebate": rebate,
+                        "accountId": $("#accountId").val()
+                    },
+                    async: false,
+                    dataType: "JSON",
+                    cache: false,
+                    success: function (res) {
+                        if (res.status == "error") {
+                            $('<span class="error rebateLowerErrorMsg' + type + '">低于下级返点</span>').insertAfter('#lowerRebate' + type);
+                            $("#save").attr("disabled", "disabled");
+                            isDisable = true;
+                        } else {
+                            isDisable = false;
+                        }
+                    }
+                });
+            }
+            if (fun == null) {
+                if (isDisable || hasError) {
+                    $("#save").attr("disabled", "disabled");
+                } else {
+                    $("#save").removeAttr("disabled");
+                }
+            } else {
+                if (isDisable || hasError) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+        }
+
+        function getLock(accountId) {
+            $.ajax({
+                url: "/user/acc/viewLock",
+                data:{id:accountId},
+                dataType: "json",
+                cache: false,
+                success: function (result) {
+                    if (result.status) {
+                        if (result.lock1[0] == '0') $("#us1").html(result.lock1[1]);
+                        else $("#us1").html('<font style="color:red">' + result.lock1[1] + '</font>');
+                        $("#us2").html(result.lock1[2]);
+                        $("#us3").html(result.lock1[3]);
+
+                        if (result.lock2[0] == '0') $("#bt1").html(result.lock2[1]);
+                        else $("#bt1").html('<font style="color:red">' + result.lock2[1] + '</font>');
+                        $("#bt2").html(result.lock2[2]);
+                        $("#bt3").html(result.lock2[3]);
+
+                        if (result.lock3[0] == '0') $("#fz1").html(result.lock3[1]);
+                        else $("#fz1").html('<font style="color:red">' + result.lock3[1] + '</font>');
+                        $("#fz2").html(result.lock3[2]);
+                        $("#fz3").html(result.lock3[3]);
+
+                        if (result.lock4[0] == '0') $("#bk1").html(result.lock4[1]);
+                        else $("#bk1").html('<font style="color:red">' + result.lock4[1] + '</font>');
+                        $("#bk2").html(result.lock4[2]);
+                        $("#bk3").html(result.lock4[3]);
+
+                        if (result.lock5[0] == '0') $("#ko1").html(result.lock5[1]);
+                        else $("#ko1").html('<font style="color:red">' + result.lock5[1] + '</font>');
+                        $("#ko2").html(result.lock5[2]);
+                        $("#ko3").html(result.lock5[3]);
+
+                        $("#viewLockModal").modal("show");
+                    } else {
+                        $.altDialog({
+                            title: "消息提醒",
+                            content: result.msg
+                        });
+                    }
+                }
+            });
+        }//function getLock
+
+    </script>
+</div>
+</div>
+{{ template "home/foot.html" }}
+
+
+{{ end }}

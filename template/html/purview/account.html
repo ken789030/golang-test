@@ -1,0 +1,300 @@
+{{ define "purview/account.html" }}
+
+{{ template "home/head.html" .head}}
+
+<script>
+    $(document).ready(function () {
+        $("[data-toggle='popover']").popover();
+        $("[data-toggle='tooltip']").tooltip();
+    });
+
+    function del(id) {
+        $.altDialog({
+                    title: "温馨提示", content: "您真的确定要删除吗？",
+                    style: "confirm",
+                    done: function () {
+                        $.ajax({
+                                    type: 'POST',
+                                    url: "/Employee/Member.del?id=" + id,
+                                    data: $('#myform').serialize(),
+                                    dataType: "json",
+                                    cache: false,
+                                    success: function (res) {
+                                        if (res.code == 0) {
+                                            $.altDialog({
+                                                title: '温馨提示',
+                                                content: "您的操作已成功",
+                                                done: function () {
+                                                    location.href = '/Employee/Member';
+                                                }
+                                            });
+                                        } else {
+                                            $.altDialog({title:'温馨提示',content:res.msg});
+                                        }
+                                    }
+                                }
+                        );
+                    }
+                }
+        );
+    }
+</script>
+
+<div class="main">
+    {{ template "purview/menu.html" .subMenuId }}
+    <form action="" class="form-inline mt15"
+          role="form" name="formUser">
+        <div class="btn-group">
+            <select class="form-control" id="groupId" name="groupId">
+
+            </select>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"
+                    aria-expanded="false">登录账号&nbsp;<span class="caret"></span></button>
+            <ul id="changeLogin" class="dropdown-menu" role="menu">
+                <li><a href="#" value="0"
+                       class="currentSelect" style="background: lightgrey;">登录账号</a></li>
+                <li><a href="#" value="1">登录IP</a></li>
+            </ul>
+        </div>
+        <div class="btn-group">
+            <input id="changeLoginValue" name="changeLoginValue" type="text" value=""
+                   class="form-control input-sm required" placeholder=""
+                   onkeyup="value=value.replace( /\s+/g,&#39;&#39;)">
+        </div>
+        <div class="form-group ml5">
+            <button type="button" data-toggle="modal" data-target="#myModal5" class="btn btn-primary btn-sm">进阶条件
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="submitResult(0);">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span> 搜索
+            </button>
+        </div>
+        <div class="form-group ml5">
+            <button type="button" class="btn btn-primary btn-sm" onclick="submitResult(1);">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增成员
+            </button>
+        </div>
+        <div id="myModal5" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="false">
+            <div class="modal-backdrop fade in"></div>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" name="cancel">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel">
+                            增加查询条件<a class="anchorjs-link"
+                                     href="#myModalLabel"><span
+                                        class="anchorjs-icon"></span></a>
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="oldStartDate" id="oldStartDate" data-format="yyyy-MM-dd"
+                               placeholder="" value="">
+                        <input type="hidden" name="oldEndDate" id="oldEndDate" data-format="yyyy-MM-dd" placeholder=""
+                               value="">
+                        <table class="table table-bordered">
+                            <tbody>
+                            <tr>
+                                <td>日期</td>
+                                <td>
+                                    <input name="dateFirst" type="text" id="datetimepicker1"  class="form-control form_datetime input-sm" data-format="yyyy-MM-dd" data-date-format="yyyy-MM-dd" placeholder="" value="" onBlur = "checkDate()">
+                                    - <input name="dateSecond" type="text" id="datetimepicker2"  class="form-control form_datetime input-sm" data-format="yyyy-MM-dd" data-date-format="yyyy-MM-dd" placeholder="" value="" onBlur = "checkDate()">
+                                </td>
+                                <td>
+                                    <div class="quickTime" start="datetimepicker1" end="datetimepicker2" pattern="yyyy-MM-dd"></div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <span class="error" style="display:none"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="searchAdvBtn">确认</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" name="cancel">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <form id="myform" name="myform" action=""
+          method="post" class="form-inline mt15" role="form">
+        <input id="groupId" name="groupId" value="" type="hidden">
+        <input id="changeLogin" name="changeLogin" value="0" type="hidden">
+        <input id="dateFirst" name="dateFirst" value="" type="hidden">
+        <input id="dateSecond" name="dateSecond" value="" type="hidden">
+        <input id="CKSubmitTime" name="CKSubmitTime" value="" type="hidden">
+        <input id="changeLoginValue" name="changeLoginValue" value="" type="hidden">
+        <table class="table table-bordered mt15">
+            <thead>
+            <tr>
+                <th>登录账号</th>
+                <th>昵称</th>
+                <th>状态</th>
+                <th>所属组别</th>
+                <th>最后登录时间</th>
+                <th>最后登录IP</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+
+        <div class="mt15 pull-left">
+            <!--
+            <button type="button" onclick="batchRemove();" class="btn btn-default btn-sm">
+                批量删除
+            </button>-->
+        </div>
+        <nav id="" class="pull-left pagination">
+            <div style="margin-top:5px;"><span>共 <big style="font-weight:bold;"></big> 条记录，当前第 <big
+                            style="font-weight:bold;"></big> 页，共 <big style="font-weight:bold;"></big> 页 </span>
+            </div>
+        </nav>
+        <nav class="pull-right">
+
+        </nav>
+
+    </form>
+    <form id="logForm" role="form" method="post" action="">
+        <input type="hidden" name="admin" id="admin">
+        <input type="hidden" name="searchType" id="searchType" value="site">
+        <input type="hidden" name="searchContent" id="searchContent" value="">
+    </form>
+    <script type="text/javascript">
+
+        var changeUrl = function() {
+            var groupId = $("#groupId").val();
+            var url = window.location.pathname;
+            url += "?groupId=" + groupId ;
+            console.log(url);
+            location.href = url;
+        }
+
+
+        $("#groupId").change(function(){
+            changeUrl();
+        });
+
+        (function () {
+            //时间控件
+            $('#datetimepicker1').datetimepicker({
+                language: 'zh-CN',
+                todayBtn: true,
+                minuteStep: 1,
+                format: 'yyyy-mm-dd',
+                minView: 'month',
+                autoclose: true
+            }).on('show', function (ev) {
+                $('#datetimepicker1').datetimepicker('setEndDate', new Date());
+            }).change(function () {
+                checkDate();
+            });
+
+            $('#datetimepicker2').datetimepicker({
+                language: 'zh-CN',
+                todayBtn: true,
+                minuteStep: 1,
+                format: 'yyyy-mm-dd',
+                minView: 'month',
+                autoclose: true
+            }).on('show', function (ev) {
+                $('#datetimepicker2').datetimepicker('setEndDate', new Date());
+            }).change(function () {
+                checkDate();
+            });
+
+            //下拉選擇期間
+            $(".quickTime").click(function () {
+                checkDate();
+            });
+
+            //查詢條件設置判斷↓↓↓↓↓
+            //取消後，日期重置
+            $("button[name='cancel']").click(function () {
+                butCnl();
+            });
+
+            $("#searchAdvBtn").click(function (){$('#oldStartDate').val($("#datetimepicker1").val());$('#oldEndDate').val($("#datetimepicker2").val());});
+            $('#changeLogin').dropdown({name:"changeLogin",current_value:"0"
+            });
+
+            $('#groupId').dropdown({name:"groupId",current_value:""});
+
+        })();
+
+        function log(loginName) {
+            $("#admin").val(loginName);
+            $("#logForm").submit();
+        }
+        //针对查询条件的日期做检查，指填写其中一个日期，则会有个提示讯息以及确认键无法送出。
+        function checkDate() {
+            //checkDateValid共用js ，檢查開始日期與結束日期是否有效填入，有誤回傳為錯誤訊息，無誤回空字串
+            //param : 開始日期
+            //param : 結束日期
+            //param : 日期是否可全查 >> true 必填日期、 false 不必填日期
+
+            var errorStr = checkDateValid($('#datetimepicker1').val(), $('#datetimepicker2').val(), false);
+
+            //彈跳視窗顯示↓
+            if (errorStr == "") {
+                $("span.error").css("display", "none");
+                $('#searchAdvBtn').removeAttr("disabled");
+            } else {
+                $('#searchAdvBtn').attr("disabled", true);
+                $("span.error").css("display", "inline");
+            }
+            $("span.error").html(errorStr);
+        }
+
+        //查詢條件取消或是"X"，將重置之前的日期
+        function butCnl() {
+            $("span.error").html("");
+            $("span.error").css("display", "none");
+            $('#searchAdvBtn').removeAttr("disabled");
+            $('#datetimepicker1').val($("#oldStartDate").val());
+            $('#datetimepicker2').val($("#oldEndDate").val());
+        }
+    </script>
+</div>
+</div>
+
+<script type="text/javascript">
+    function submitResult(id) {
+        if (id == 0) {
+            document.formUser.action = "/purview/account";
+            formUser.submit();
+        }
+        if (id == 1) {
+            location.href = "/purview/account/add";
+        }
+
+    }
+    function changeSelectAll(){var cks =document.getElementsByName("selectOne");var ckslen =cks.length;if(document.getElementById("selectAll").checked){for(var i=0;i<ckslen;i++) {cks[i].checked =1;}
+    }else{for(var i=0;i<ckslen;i++) {cks[i].checked =0;}
+    }
+    }
+    function batchRemove(){var cbs =document.getElementsByTagName("input");var b =false;for(var i=0;i<cbs.length;i++){if(cbs[i].type =="checkbox" &&cbs[i].checked){b =true;}
+    }
+    if(!b){$.altDialog({title:'提示',content:'请至少选择一个要被删除的对象',style:'confirm'});return false;}else{$.altDialog({title:"温馨提示",content:"您真的确定要批量删除吗？",style:"confirm",done:function(){$.ajax({type:'POST',url:"/",data:$('#myform').serialize(),dataType:"json",cache:false,success:function(res){if(res.status =="success"){$.altDialog({title:'温馨提示',content:"您的操作已成功",done:function(){location.href ='/';}});}else{$.altDialog({title:'温馨提示',content:res.errMsg});}
+    }
+    });}
+    });}
+    }
+    function submitIsFreeze(id, isFreeze){if(isFreeze ==1){$.altDialog({title:"提示",content:"是否解冻？",style:"confirm",done:function(){$.ajax({url:'/',data:$("#myform").serialize(),type:'POST',dateType:'json',data:{id:id,isFreeze:isFreeze
+    },success:function(data){$.altDialog({title:'提示',content:'操作成功',done:function(){location.reload();}});}
+    });}
+    });}
+    if(isFreeze ==2){$.altDialog({title:"提示",content:"是否冻结？",style:"confirm",done:function(){$.ajax({url:'/',data:$("#myform").serialize(),type:'POST',dateType:'json',data:{id:id,isFreeze:isFreeze
+    },success:function(data){$.altDialog({title:'提示',content:'操作成功',done:function(){location.reload();}});}
+    });}
+    });}
+    }
+</script>
+{{ template "home/foot.html" }}
+
+{{ end }}

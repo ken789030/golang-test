@@ -1,0 +1,12 @@
+{{ define "platform/menu.html" }}
+
+<div class="twoNav">
+    <ul>
+        <li {{ if eq . "channel"  }} class="active"  {{ end }}>
+            <a href="/platform/channel">渠道管理</a>
+        </li>
+    </ul>
+    <div class="clearfix"></div>
+</div>
+
+{{ end }}

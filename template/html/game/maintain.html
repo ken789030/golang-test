@@ -1,0 +1,122 @@
+{{ define "game/maintain.html" }}
+
+{{ template "home/head.html" .head}}
+
+
+<script>
+    $(document).ready(function () {
+        $("[data-toggle='popover']").popover();
+        $("[data-toggle='tooltip']").tooltip();
+    });
+</script>
+
+<div class="main">
+    {{ template "game/menu.html" .subMenuId}}
+    <form action="" class="form-inline mt15"
+          role="form" name="formUser">
+        <a href="/game/maintain/add" class="btn btn-primary btn-sm"><span
+                    class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增</a>
+        
+        <a href="#" class="btn btn-primary btn-sm" id="notice"> 通知</a>
+        
+
+    </form>
+    <form id="myform" name="myform" action=""
+          method="post" class="form-inline mt15" role="form">
+        <table class="table table-bordered mt15">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>游戏</th>
+                <th>开始时间</th>
+				<th>结束时间</th>
+                <th>备注</th>
+                <th>狀態</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+
+        <nav id="" class="pull-left pagination">
+            <div style="margin-top:5px;"><span>共 
+                <big style="font-weight:bold;"></big> 条记录，当前第 
+                <big style="font-weight:bold;"></big> 页，共 
+                <big style="font-weight:bold;"></big> 页 </span>
+            </div>
+        </nav>
+        <nav class="pull-right">
+            
+        </nav>
+
+    </form>
+</div>
+</div>
+
+<script type="text/javascript">
+
+    function deleteMaintain(id) {
+
+        if (window.confirm('确定删除维护通知吗？')) {
+            var  data = "id=" + id;
+            $.ajax({
+                type: 'POST',
+                url: "/Operation/Maintain.del",
+                data: data,
+                dataType: "json", cache: false,
+                success: function (res) {
+                    if (res.code == 0) {
+                        $.altDialog({
+                            title: '温馨提示',
+                            content: "您的操作已成功",
+                            done: function () {
+                                location.href = '/Operation/Maintain';
+                            }
+                        });
+                    } else {
+                        $.altDialog({title:'温馨提示',content:res.msg});
+                    }
+                }
+            });
+            return true;
+        } else {
+
+            return false;
+        }
+    }
+
+    $("#notice").click(function () {
+    	var confirmResult = confirm("确定通知服务进行维护");
+    	console.log(confirmResult);
+    	if (!confirmResult) {
+    		return;
+    	} else {
+			$.ajax({
+		        type: 'POST',
+		        url: "/Operation/Maintain.notice",
+		        dataType: "json", 
+		        cache: false,
+		        success: function (res) {
+		            if (res.code == 0) {
+		                $.altDialog({
+		                    title: '温馨提示',
+		                    content: "您的操作已成功",
+		                    done: function () {
+		                        location.href = '/Operation/Maintain';
+		                    }
+		                });
+		            } else {
+		                $.altDialog({title:'温馨提示',content:res.msg});
+		            }
+		        }
+		    });
+    	}
+    	
+    }) 
+</script>
+
+{{ template "home/foot.html" }}
+
+{{ end }}
